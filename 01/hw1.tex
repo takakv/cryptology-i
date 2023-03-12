@@ -1,0 +1,384 @@
+\documentclass{../homework}
+
+\usepackage{enumitem}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\newcommand{\Prx}[1]{\Pr\left[#1\right]}
+\input{../name.tex}
+
+\begin{document}
+
+\homework{Homework \#1}
+{Due: 04.03.23}{\profname}{\myname}
+
+\begin{problem}
+    Show that the equation $12x+9y = 1$ has no solutions over the integers, that
+    is, there do not exist two such integers $x, y$ such that $12x + 9y = 1$.
+\end{problem}
+\begin{solution}
+Consider $x,y\in\Z$. We are given
+\begin{alignat*}{2}
+                    \quad&& 12x + 9y     &= 1\\
+    \Leftrightarrow \quad&& 3(4x + 3y)   &= 1\\
+    \Leftrightarrow \quad&& 4x + 3y      &= \frac{1}{3}.
+\end{alignat*}
+Because addition and multiplication are closed binary operations on $\Z$, we
+have $x,y\in\Z\Rightarrow4x,3y\in\Z\Rightarrow4x+3y\in\Z$. However,
+$4x+3y=\frac{1}{3}\notin\Z$, which is a contradiction. Therefore, there do not
+exist two integers $x, y$ such that $12x+9y=1$. $\square$
+\end{solution}
+
+\begin{problem}
+\hfill
+\begin{enumerate}[label=(\alph*)]
+    \item Find a nonzero small integer $a$ such that $7^a\equiv 1 \pmod{25}$.
+    \item What is $7^{123456789}\bmod{25}$?
+\end{enumerate}
+\end{problem}
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item The trivial approach is to increment $a$ one at a time, and evaluate
+    the result.
+    
+    We have:
+    \begin{alignat*}{2}
+        a=1:\quad&& 7^1 \bmod 25 &= 7\\
+        a=2:\quad&& 7^2 \bmod 25 &= 49 \bmod 25 = 24\\
+        a=3:\quad&& 7^3 \bmod 25 &= 343 \bmod 25 = (325 + 18) \bmod 25 = 18\\
+        a=4:\quad&& 7^4 \bmod 25 &= \left(7^2\right)^2 \bmod 25\\
+        \quad&& &=\left(7^2 \bmod{25}\right)^2 \bmod{25}\\
+        \quad&& &=24^2 \bmod 25 = 576 \bmod 25 = (575 + 1) \bmod 25 = 1
+    \end{alignat*}
+    We see that $a = 4$ is a nonzero small integer s.t. $7^a\equiv1\pmod{25}$.
+    \item Consider $a = 4b$. We have
+    $7^a \bmod{25} = \left(7^4\right)^b \bmod{25} = \left(7^4 \bmod{25}\right)^b
+    \bmod{25}=(1)^b\bmod{25}=1$, and so $4|a \Rightarrow 7^a\equiv 1 \pmod{25}$.
+
+    We know that $4|100$, and so $4$ divides any decimal integer whose last two
+    digits are divisible by $4$. Therefore, $4|123456788$ and we have
+    $7^{123456789}\equiv1\cdot7^1\equiv7\pmod{25}$.
+\end{enumerate}
+\end{solution}
+
+\begin{problem}
+    Alice says: ``Think of any integer. Double it. Take the result to the fourth
+    power. Add two. Square the result. Take the last digit. It's 4, isn't it?''
+    Show that Alice is correct.
+\end{problem}
+\begin{solution}
+Let $n\in\Z$. By following Alice's instructions, we get
+$\left((2n)^4+2\right)^2$. To show that the last digit is $4$, we can show that
+$\left((2n)^4+2\right)^2\equiv4\pmod{10}$.
+\begin{alignat*}{2}
+    \quad&& \left((2n)^4+2\right)^2 &\equiv 4\pmod{10}\\
+    \Leftrightarrow \quad&& (2n)^8+2^2(2n)^4+4 &\equiv 4\pmod{10}\\
+    \Leftrightarrow \quad&& 2^6\left(2^2n^8+n^4\right) &\equiv 0\pmod{10}\\
+    \Leftrightarrow \quad&& \left(2^5n^4\right)\left(2^2n^4+1\right) &\equiv 0
+    \pmod{5}
+\end{alignat*}
+We have
+\begin{alignat*}{2}
+    n\equiv0\pmod{5}\quad \lor\quad &&2^2n^4+1 &\equiv 0\pmod{5}\\
+    \Leftrightarrow&& 4n^4 &\equiv -1 \pmod{5}\\
+    \Leftrightarrow&& n^4 &\equiv 1 \pmod{5}\\
+    \Leftrightarrow&& n^{5-1} &\equiv 1 \pmod{5}
+\end{alignat*}
+By Fermat's little theorem we know that $n^{5-1} \equiv 1 \pmod{5}$ holds for
+all $n$ that are not multiples of $5$. But we also have that
+$n\equiv 0\pmod{5}$ when $5|n$. We hence have that
+$$
+    \forall n\in\Z:\left(2^5n^4\right)\left(2^2n^4+1\right) \equiv 0\pmod{5},
+$$
+and so, by equivalence, $\left((2n)^4+2\right)^2\equiv4\pmod{10}$ for any
+integer $n$. $\square$
+\end{solution}
+
+\begin{problem}
+    The disease XXX has a prevalence rate of $0.001$ among the population, i.e,
+    the probability that a random person has XXX is $0.001$. A test exists with
+    the following properties: the probability that you will test positive if you
+    have XXX, is $0.95$. The probability that you will test positive if you do
+    not have XXX is $0.1$.
+\begin{enumerate}[label=(\alph*)]
+    \item What is the probability that a random person would test positive with
+    this test?
+    \item Bob does a test and gets a positive result. Bob is very worried and
+    thinks he has 95\% chance of having XXX. Is Bob's concern justified? What is
+    the actual probability of Bob having XXX?
+    \item Bob talks to Alice about this, who calms him down somewhat. Bob now
+    does the test two more times and they also come back positive. What is now
+    the probability that Bob has XXX? If you think that it is not possible to
+    give an exact answer to this question, explain why.
+\end{enumerate}
+\end{problem}
+\begin{solution}
+    Let us denote the events
+\begin{itemize}
+    \item $X:$ someone has XXX,
+    \item $P:$ someone tests positive for XXX.
+\end{itemize}
+We have the following probabilities:
+\begin{itemize}
+    \item $\Prx{X}=0.001, \Prx{\widebar{X}} = 1 - \Prx{X} = 0.999$
+    \item $\Prx{P|X}=0.95, \Prx{\widebar{P}|X} = 1 - \Prx{P|X} = 0.05$
+    \item $\Prx{P|\widebar{X}}=0.1, \Prx{\widebar{P}|\widebar{X}}=0.9$
+\end{itemize}
+We will calculate other probabilities as needed.
+\begin{enumerate}[label=(\alph*)]
+    \item By the law of total probability, we have
+    $\Prx{P}=\Prx{P|X}\Prx{X} + \Prx{P|\widebar{X}}\Prx{\widebar{X}}=
+    0.95\cdot0.001 + 0.1\cdot0.999=0.10085$, which is the probability of a
+    random person testing positive with this test.
+
+    \item Bob's concern is not justified. $95\%$ is the probability that the
+    test is positive \textit{if} Bob has XXX. However, the test may be positive
+    without Bob having XXX. Bob hence seeks $\Prx{X|P}$, which is the
+    probability of having XXX if the test is positive.
+    
+    We can calculate this using Bayes' theorem:
+    $$
+        \Prx{X|P}=\frac{\Prx{P|X}\Prx{X}}{\Prx{P}}=
+        \frac{0.95\cdot0.001}{0.10085}
+        \approx 0.00942.
+    $$
+    The probability that Bob has XXX based on a single test is $0.94\%$.
+
+    \item Let us assume that Bob has XXX. The probability that he tests positive
+    is 0.95. Because testing is an independent event (does not depend on
+    previous test results), the probability that Bob tests positive thrice when
+    having XXX is $\left( \Prx{P|X} \right)^3 = 0.95^3$. We write it as
+    $\Prx{P^3|X}=0.95^3$.
+
+    By using Bayes' theorem, we have
+    $$
+        \Prx{X|P^3}=\frac{\Prx{P^3|X}\Prx{X}}{\Prx{P^3}}=
+        \frac{\Prx{P^3|X}\Prx{X}}
+        {\Prx{P^3|X}\Prx{X}+\Prx{P^3|\widebar{X}}\Prx{\widebar{X}}},
+    $$
+    and we also have $\Prx{P^3|\widebar{X}}
+    = \left(\Prx{P|\widebar{X}}\right)^3
+    = 0.1^3$, and $\Prx{X}=0.001=0.1^3$.
+
+    We can then calculate
+    $$
+        \Prx{X|P^3}=
+        \frac{0.95^3\cdot 0.1^3}{0.95^3\cdot 0.1^3+0.1^3\cdot 0.999}=
+        \frac{0.95^3\cdot 0.1^3}{0.1^3(0.95^3 + 0.999)}=
+        \frac{0.95^3}{0.95^3+0.999}\approx 0.4619.
+    $$
+    The probability that Bob has XXX considering he tested positive thrice is
+    $46.19\%$.
+
+    This probability is of course based on the assumption that the test outcome
+    is only affected by the false positive/false negative rate and whether Bob
+    has XXX. It is possible that there are some unknown factors that skew the
+    test in Bob's case, which would make the resulting probability inaccurate.
+
+    \iffalse
+    \item The test being positive does not make it more likely for the next test
+    to be positive, even if we perceive it as such. What really makes the test
+    more likely to be positive is if Bob has the disease. That is, the test
+    result is independent of previous tests, and is dependent only on Bob having
+    XXX or not. \textit{(at least it seems reasonable for me to assume so)}
+
+    Let $P_i$ be the event that test $i$ is positive. We have
+    $$
+        \Pr(P_{i+1}|P_i)=\frac{\Pr(P_{i+1}\cap P_i)}{\Pr(P_i)} =
+        \frac{
+            \Pr(P_{i+1}\cap P_i|X)\Pr(X) +
+            \Pr(P_{i+1}\cap P_i|\widebar{X})\Pr(\widebar{X})
+        }
+        {\Pr(P_i|X)\Pr(X) + \Pr(P_i|\widebar{X})\Pr(\widebar{X})}
+    $$
+    We must now figure out the value of $\Pr(P_{i+1}\cap P_i|X)$ and
+    $\Pr(P_{i+1}\cap P_i|\widebar{X})$.
+
+    If we fix that Bob has (or does not have) the disease, the test result is
+    still independent of previous results, as testing is an independent event.
+    As such, we have
+    $$
+        \Pr(P_{i+1}\cap P_i|X) = \Pr(P_{i+1}|X)\Pr(P_i|X) =
+        \left(\Pr(P|X)\right)^2
+    $$
+    and $\Pr\left(P_{i+1}\cap P_i|\widebar{X}\right)=
+    \left(\Pr\left(P|\widebar{X}\right)\right)^2$
+    following the same reasoning.
+    \fi
+\end{enumerate}
+\end{solution}
+
+\begin{problem}
+    The following is a very simplified version of an existing post-quantum
+    cryptosystem (i.e a cryptosystem that, as far as we know, large quantum
+    computers cannot break).
+    
+    There are some fixed parameters $t, s$ and $p$. A message must be in
+    $[0, p - 1]$. When we encrypt a message $m$, we sample an integer $e$
+    uniformly from $[-t, t]$. This is called a noise term. We will not specify
+    how encryption is done.
+    
+    Decrypting has two steps. First step, which we will not specify, will
+    return the term $m + p\cdot e =: m'$. After that, we will compute
+    $m'\pmod{p}$ and obtain the original message $m$. This scheme also has the
+    added property that, under some constraints, it is possible to add and
+    multiply ciphertexts. Thus, it is possible to perform operations on, say
+    $Enc(a)$ and $Enc(b)$, to obtain $Enc(a + b)$ and $Enc(a\cdot b)$ without
+    knowing the decryption key nor $a$ nor $b$.
+    
+    Thus, for addition, if we encrypt a message $m_1$ with noise term $e_1$ and
+    message $m_2$ with noise term $e_2$, then after performing the first step of
+    decryption, we obtain $m_1 + m_2 + p(e_1 + e_2)$. We take the modulo $p$ and
+    have as the result $m_1 + m_2 \pmod{p}$. (Something similar happens with
+    multiplication, but we will not talk about it here)
+    
+    However, these operations can fail and give us incorrect results when we are
+    unlucky. Namely, for addition, if it happens that
+    $e_1 + e_2 > s$ or $e_1 + e_2 < -s$, then the decryption fails.
+    \begin{enumerate}[label=(\alph*)]
+        \item Let $t = 1$, i.e the noise is picked from $[-1, 0, 1]$. Let
+        $s = 1$. Two messages are encrypted and their encryptions are added.
+        What is the probability that the decryption fails, that is,
+        $e_1 + e_2 > 1$ or $e_1 + e_2 < -1$?
+        \item Let $t > 1$, so the noise is picked from
+        $[-t,\dots, -1, 0, 1,\dots, t]$. Let $s = t$. Two messages are encrypted
+        and their encryptions are added. What is the probability that the
+        decryption fails? (Hint: The formula for the sum of first $k$ numbers is
+        $1 + 2 +\dots+ k = \frac{k(k+1)}{2}$.)
+    \end{enumerate}
+\end{problem}
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+%    \item We have $e_1,e_2\in\{-1, 0, 1\}$. We can have $e_1=e_2$, and we do not
+%    consider the order because addition is commutative. We therefore have a case
+%    of choosing $2$-combinations with repetition from $3$ elements, and we have
+%    a total of $\binom{3+2-1}{2}=6$ such combinations for $e_1,e_2$.
+%    
+%    Decryption can however only fail in two cases: if
+%    $e_1 = 1 = e_2$ or $e_1 = -1 = e_2$. Therefore the probability of failure is
+%    $\frac{2}{6}=\frac{1}{3}=0.\widebar{3}$.
+
+    \item We have $e_1,e_2\in\{-1, 0, 1\}$. We therefore have $3^2=9$ total
+    ordered pairs, because $e_1,e_2$ can both take $3$ values, neither depends
+    on the other, and we can have $e_1=e_2$.
+
+    Decryption can however only fail in two cases: if
+    $e_1 = 1 = e_2$ or $e_1 = -1 = e_2$. Therefore the probability of failure is
+    $\frac{2}{9}=0.\widebar{2}$.
+
+
+    \item There are $2t + 1$ elements in the set $\{-t,\dots,-1,0,1,\dots,t\}$,
+    and so there are now a total of $(2t+1)^2$ ordered pairs of elements.
+%    $$
+%    \binom{(2t + 1) + 2 - 1}{2}=\frac{(2t +2)!}{2(2t)!}=
+%    \frac{(2t+2)(2t+1)(2t)!}{2(2t)!}=\frac{(2t+2)(2t+1)}{2}=(t+1)(2t+1)
+%    $$
+%    combinations.
+    
+    Let us restrict ourselves to when $e_1, e_2$ are positive, that is,
+    $e_1, e_2\in\{1,2,\dots,t\}$. We do not need to consider cases where either
+    $e$ is $0$, as then it is not possible to have $e_1+e_2>t$. How many
+    calculations can we make so that $e_1+e_2>t$?
+
+    We have that for $e_1 = t - x$, with $x\in\{1,2,\dots,t-1\}$, then $x < e_2
+    \le t$:
+    \begin{itemize}
+        \item For $e_1=t$, we have $e_1+e_2>t$ for any $e_2\in\{1,2,\dots,t\}$,
+        so there are $t$ possibilities.
+        \item For $e_1=t-1$, $e_1+e_2>t$ for $e_2\in\{2,3,\dots,t\}$, and there
+        are $t-1$ possibilities.
+        
+        $\vdots$
+        \item For $e_1=1$, $e_1+e_2>t$ there is only one possibility, which is
+        $e_2 = t$.
+    \end{itemize}
+    We see then that the number of possibilities forms a simple additive
+    sequence, and we can sum up the possibilities for each case to get the total
+    number of possibilities that result in $e_1+e_2>t$. We have
+    $$
+        1 + 2 + \dots + (t-1) + t = \frac{t(t+1)}{2}
+    $$
+    total possibilities. We must also consider the negative cases, so by
+    symmetry around $0$, we multiply the number of cases by $2$. We do not have
+    to consider cases where either $e$ is $0$. There are then $t(t+1)$ cases
+    that satisfy $\lvert e_1 + e_2 \rvert > t$.
+
+    To get the probability of decryption failure, we simply divide the number of
+    possible failure cases by the number of total possible cases. The
+    probability that decryption fails for $s=t$ is hence
+    $$
+        \frac{t(t+1)}{(2t+1)^2}.
+    $$
+
+    To go a step further, we have that 
+    $$
+        \lim_{t\rightarrow\infty} \frac{t(t+1)}{(2t+1)^2} =
+        \lim_{t\rightarrow\infty} \frac{t^2+t}{4t^2+4t+1} =
+        \frac{1}{4} \lim_{t\rightarrow\infty}
+        \frac{t^2\left(1+\frac{1}{t}\right)}
+        {t^2\left(1+\frac{1}{t}+\frac{1}{4t^2}\right)} = \frac{1}{4}
+    $$
+    and so, as $t$ grows larger, the probability of failure when $t=s$ nears
+    $25\%$.
+
+    \iffalse
+    We can sum up the number of possibilities to get $\frac{t(t+1)}{2}$, but
+    this represents the number of ordered pairs $(e_1, e_2)$. Since we do not
+    consider order for the sum, because addition is commutative, we must get rid
+    of the pairs producing duplicate sums.
+
+    We can intuitively see that we have duplicates for $0< e_1 \le t/2$, because
+    $$
+        0 < e_1 \le t/2\quad\land\quad e_1+e_2 >t\quad\Rightarrow\quad e_2 > t/2
+    $$
+    and for every $x\in\{\lceil t/2 \rceil,\dots,t-1\}$ we have already
+    accounted for the unordered pairs $\{t-x, y\}$, where $x < y \le t$.%\in\{t/2,\dots,t\}$.
+    
+    We cannot simply half the number of possibilities however, since the special
+    case where $e_1=e_2$ satisfies $e_1+e_2>t$ is only true when
+    $e_1=e_2 > \lfloor t/2 \rfloor$. When $t$ is even, there are $t/2$ such
+    special cases. When $t$ is odd, there are $(t+1)/2$ such cases, because
+    $e_1 = e_2 > \lfloor t/2 \rfloor \Leftrightarrow
+    e_1 = e_2 \ge \lceil t/2 \rceil$ for odd $t$.
+    
+    because the
+    ``middle'' special case, e.g., $\{3, 3\}$ for $t=5$, also satisfies
+    $e_1+e_2>t$, and so we must include it. Another way to think about it is
+    that we additionally consider the case $\{0,0\}$ to make the number of cases
+    even, and hence $(t+1)/2$ and not $(t-1)/2$.
+    
+    Therefore, we must first subtract the number of special cases, before we can
+    half the number of possibilities. We then add back the number of special
+    cases after halving.
+
+    If $t$ is even:
+
+    $$
+        \frac{\frac{t(t+1)}{2}-\frac{t}{2}}{2}+\frac{t}{2} =
+        \frac{\frac{t(t+1)}{2}-\frac{t}{2}+\frac{2t}{2}}{2} =
+        \frac{t(t+1) + t}{4} =
+        \frac{t(t+2)}{4}
+    $$
+    
+    If $t$ is odd:
+
+    $$
+        \frac{\frac{t(t+1)}{2}-\frac{t+1}{2}}{2}+\frac{t+1}{2} =
+        \frac{\frac{t(t+1)-(t+1)}{2}+\frac{2(t+1)}{2}}{2} =
+        \frac{t(t+1)+(t+1)}{4} = \frac{(t+1)^2}{4}
+    $$
+
+    By symmetry around $0$, to consider also the negative cases, so we multiply
+    the number of cases by $2$. We hence have a total
+    of
+    $$
+        \frac{t(t+2)}{2} \text{ cases for even $t$, }
+        \frac{(t+1)^2}{2} \text{ cases for odd $t$}
+    $$
+    that satisfy $e_1+e_2>t$.
+    \fi
+\end{enumerate}
+\end{solution}
+
+\end{document}
