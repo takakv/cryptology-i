@@ -1,6 +1,8 @@
 \documentclass{../homework}
 
-\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{fit,circuits.ee.IEC,positioning,calc,patterns,%
+decorations.pathreplacing,decorations.pathmorphing}
 
 \newtheorem{problem}{Problem}
 \newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
@@ -48,7 +50,7 @@
     See \texttt{problem1.py} for the program's source code.
 \end{solution}
 
-\begin{problem}
+\begin{problem}\label{prob2}
     Consider the following encryption system. We fix a finite field
     $\mathbb{Z}_p$ where $p$ is a publicly known prime. From now on, we will
     work in this field. (Essentially this means that from now on, all addition,
@@ -117,14 +119,14 @@
     $$
     holds and the scheme has perfect secrecy by definition.
 
-    \item For this game, we assume that we know $p$. We have
+    \item We have
     $$
         m_1 + k \equiv c_1 \pmod{p}\quad\Leftrightarrow\quad
         c_1 - m_1 \equiv k \pmod{p}
     $$
-    and because we know $m_1, c_1$, we can recover the adversary's key $k$ in
-    the first part of the game. In the second part, we learn $c_2$ from the
-    adversary, and we have
+    and because we know $m_1, c_1$, and $p$, we can recover the adversary's key
+    $k$ in the first part of the game. In the second part, we learn $c_2$ from
+    the adversary, and we have
     $$
         m_2 + k \equiv c_2 \pmod{p}\quad\Leftrightarrow\quad
         c_2 - k \equiv m_2 \pmod{p}.
@@ -142,6 +144,81 @@
     Let us verify this. We have $k = (2 - 4) \bmod{13} = 11$ and
     $c_2 = (9 + 11) \bmod{13} = 7$ holds.
 \end{itemize}
+\end{solution}
+
+\begin{problem}
+    Consider the following modification for the encryption scheme described in
+    Problem \ref*{prob2}. The aim of this modification is to provide integrity
+    for the scheme. Again, all operations are in $\mathbb{Z}_p$ where $p$ is a
+    publicly known prime.
+    
+    The key is the tuple $(k_1,k_2,\alpha)$ where $k_1,k_2$ are  randomly picked
+    from $\mathbb{Z}_p$ and $\alpha$ is randomly picked from
+    $\mathbb{Z}_p\setminus\{0\}$. The  encryption of  a message $m$ is defined
+    by
+    $$
+        Enc(m,(k_1,k_2,\alpha))=(k_1+m,k_2+m\alpha)=:(c_1,c_2).
+    $$
+    
+    The decryption algorithm is the following.
+    $$
+        Dec((c_1,c_2),(k_1,k_2,\alpha))=
+        \begin{cases}
+            c_1-k_1 & \text{if } \alpha(c_1-k_1)=(c_2-k_2)\\
+            \bot & \text{otherwise}
+        \end{cases}
+    $$
+    
+    Here, $\alpha(c_1-k_1)\stackrel{?}{=}(c_2-k_2)$ is a correctness check. That
+    is, if this check goes through, we believe that the message has not been
+    tampered with and we do the normal decryption, but  if the check does not go
+    through, the message has been tampered with and we output $\bot$. Thus we
+    either get back the original message or an error.
+    
+    The following game formalizes the adversary trying to modify the encrypted
+    message. 
+
+\begin{center}
+\begin{tikzpicture}[>=latex]
+    \node (ch) at (-0.3,2.8) {Challenger};
+    \node (adv) at (8.3,2.8) { Adversary};
+    \node[draw,inner sep=2.5cm] at (10,0) (a) {};
+    \node[draw,inner sep=2.5cm] at (0,0) (c) {};
+    \draw[<-] (2.5,1) -- (7.5,1)
+        node[midway,align=center,above,text width=4cm]
+        {\footnotesize $m$};
+    \draw[->] (2.5,0.2) -- (7.5,0.2)
+        node[midway,align=center,above,text width=4cm]
+        {\footnotesize $c_1,c_2$};
+    \draw[<-] (2.5,-0.6) -- (7.5,-0.6)
+        node[midway,align=center,above,text width=4cm]
+        {\footnotesize $c_1',c_2'$};
+    \node (n) at (-0.3,1.5)
+        {\footnotesize $k_1,k_2 \xleftarrow{\$} \mathbb{Z}_p,\alpha
+        \xleftarrow{\$} \mathbb{Z}_p\setminus\{0\}$};
+    \node (o) at (-0.3,0.5)
+        { \footnotesize $(c_1,c_2) \gets (k_1+m,k_2+m\alpha)$};
+    \node (p) at (-0.3,-1)
+        { \footnotesize $(v_1,v_2) \gets (c_1'-k_1,c_2'-k_2 )$};
+    \node (p) at (-0.3,-1.7)
+        { \footnotesize $m' \gets
+        \begin{cases}
+            v_1 & \text{if } \alpha v_1= v_2\\
+            \bot & \text{otherwise}. 
+        \end{cases}$};
+    \draw[->] (2.5,-2.1) -- (5.5,-2.1)
+        node[midway,align=right,above,text width=4cm]
+        {\footnotesize $m'$};
+\end{tikzpicture}
+\end{center}
+
+    Show that for any adversary $A$, in the game above
+    $$
+        \Pr[m'\neq m \text{ and }m'\neq \bot]\leq \frac{1}{p-1}.
+    $$
+\end{problem}
+\begin{solution}
+    
 \end{solution}
 
 \end{document}
