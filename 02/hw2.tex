@@ -116,6 +116,31 @@
         \Pr[c=c':k\ursample\Z_p, c'\leftarrow Enc(k, m_2)]
     $$
     holds and the scheme has perfect secrecy by definition.
+
+    \item For this game, we assume that we know $p$. We have
+    $$
+        m_1 + k \equiv c_1 \pmod{p}\quad\Leftrightarrow\quad
+        c_1 - m_1 \equiv k \pmod{p}
+    $$
+    and because we know $m_1, c_1$, we can recover the adversary's key $k$ in
+    the first part of the game. In the second part, we learn $c_2$ from the
+    adversary, and we have
+    $$
+        m_2 + k \equiv c_2 \pmod{p}\quad\Leftrightarrow\quad
+        c_2 - k \equiv m_2 \pmod{p}.
+    $$
+
+    Because the key $k$ is the same for both stages of the game, we can easily
+    recover $m_2$ since
+    $$
+        m_2 = (c_2 - k) \bmod{p} = (c_2 - c_1 + m_1) \bmod{p}.
+    $$
+
+    As an example, suppose we have $p = 13, m_1 = 4, c_1 = 2, c_2 = 7$. Then
+    we have $m_2 = (7 - 2 + 4) \bmod{13} = 9$.
+
+    Let us verify this. We have $k = (2 - 4) \bmod{13} = 11$ and
+    $c_2 = (9 + 11) \bmod{13} = 7$ holds.
 \end{itemize}
 \end{solution}
 
