@@ -1,5 +1,7 @@
 \documentclass{../homework}
 
+\usepackage{etoolbox}
+
 \usepackage{tikz}
 \usetikzlibrary{fit,circuits.ee.IEC,positioning,calc,patterns,%
 decorations.pathreplacing,decorations.pathmorphing}
@@ -9,6 +11,7 @@ decorations.pathreplacing,decorations.pathmorphing}
 
 \newcommand{\Prx}[1]{\Pr\left[#1\right]}
 \newcommand{\ursample}{\overset{{\scriptscriptstyle\$}}{\leftarrow}}
+\newcommand{\st}{\text{ such that }}
 \input{../name.tex}
 
 \begin{document}
@@ -85,15 +88,25 @@ decorations.pathreplacing,decorations.pathmorphing}
     for two messages $m_1, m_2\in\Z_p$.
     %Because $m, k\in\Z_p$ we have that $0\le m +k \le 2p - 2$.
 
-    We have that $Enc(k, m) = c \Rightarrow k + m \equiv c \pmod{p} \Rightarrow
-    c - m \equiv k \pmod{p}$ and so %there is only one $k = (c - m) \bmod{p}$
+    Let $\mathcal{K}=\Z_p$ be the key-space and $\mathcal{M}=\Z_p$ be the
+    message space. Clearly $\mathcal{K}=\mathcal{M}$ and so there as many keys
+    as there are messages and vice-versa. Additionally we have the ciphertext
+    space $\mathcal{C}=\Z_p$ because the image of the encryption function is
+    $\Z_p$, and so $\mathcal{K},\mathcal{M},\mathcal{C}$ are all equal.
+
+    We also have $Enc(k, m) = c\ \Rightarrow\ k + m \equiv c \pmod{p}
+    \ \Rightarrow\ c - m \equiv k \pmod{p}$ and so
+    %there is only one $k = (c - m) \bmod{p}$
     %s.t. $Enc(k, m) = (k + m) \bmod{p} = c$.
     \begin{equation}\label{eq:uniqenq}
-        \exists! k = (c - m) \bmod{p} : Enc(k, m) = (k + m) \bmod{p} = c.
+        \forall m,c\in\Z_p, \exists! k = (c - m) \bmod{p} \st Enc(k, m) = (k + m)
+        \bmod{p} = c
     \end{equation}
+    where $\exists!x$ is the notation for ``there exists a unique $x$''.
 
-    We can convince ourselves that this is true. Let $k, k'\in\Z_p$ s.t. $(k+m)
-    \bmod{p} = c = (k'+ m) \bmod{p}$, with $k\neq k'$, and $x,y\in\Z$. Then
+    We can convince ourselves that this is true. Let $k, k'\in\Z_p$ such that
+    $(k+m) \bmod{p} = c = (k'+ m) \bmod{p}$, with $k\neq k'$, and $x,y\in\Z$.
+    Then
     \begin{alignat*}{2}
         &&\quad k + m + xp &= k' + m + yp\\
         \Leftrightarrow&& k &= k' + p(y - x)\\
@@ -102,17 +115,18 @@ decorations.pathreplacing,decorations.pathmorphing}
     \end{alignat*}
     because $0\le k, k' < p$.
 
-    From statement \ref{eq:uniqenq} we know that there exists a unique $k$
-    satisfying $Enc(k, m)=c$. We also have that $\Pr[c=c':k\ursample\Z_p, c'
-    \leftarrow Enc(k, m)]$ is the number of keys satisfying $Enc(k,m)=c$ divided
-    by the total number of possible keys.
-
-    We hence have
+    Statement \ref{eq:uniqenq} states that there is a unique way of encrypting a
+    message $m$ with a key $k$ so that the encryption of $m$ results in $c$, and
+    such a way exists for every $m$ and $c$. Because $|\mathcal{K}|=|\Z_p|=p$,
+    there are $p$ possibilities to pick such a key.
+    
+    As such, for a given $c$ and no matter the message $m$, we have
     $$
         \Pr[c=c':k\ursample\Z_p, c'\leftarrow Enc(k, m)]=
-        \frac{|k\in\Z_p \text{ s.t. } Enc(k, m) = c|}{|\Z_p|}=\frac{1}{p}
+        \frac{|k\in\Z_p \st Enc(k, m) = c|}{|\Z_p|}=\frac{1}{p}.
     $$
-    which holds for all $m,c'\in\Z_p$ and so
+
+    This probability is independent of $m$, and so
     $$
         \Pr[c=c':k\ursample\Z_p, c'\leftarrow Enc(k, m_1)] =
         \Pr[c=c':k\ursample\Z_p, c'\leftarrow Enc(k, m_2)]
@@ -142,10 +156,11 @@ decorations.pathreplacing,decorations.pathmorphing}
     we have $m_2 = (7 - 2 + 4) \bmod{13} = 9$.
 
     Let us verify this. We have $k = (2 - 4) \bmod{13} = 11$ and
-    $c_2 = (9 + 11) \bmod{13} = 7$ holds.
+    $c_2 \stackrel{?}{=} (m_2 + k) \bmod{p} = (9 + 11) \bmod{13} = 7$ holds.
 \end{itemize}
 \end{solution}
 
+\iffalse
 \begin{problem}
     Consider the following modification for the encryption scheme described in
     Problem \ref*{prob2}. The aim of this modification is to provide integrity
@@ -220,5 +235,6 @@ decorations.pathreplacing,decorations.pathmorphing}
 \begin{solution}
     
 \end{solution}
+\fi
 
 \end{document}
