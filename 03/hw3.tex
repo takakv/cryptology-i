@@ -26,6 +26,13 @@
 {Due: 18.03.23}{\profname}{\myname}
 
 \begin{problem}
+    
+\end{problem}
+\begin{solution}
+    
+\end{solution}
+
+\begin{problem}
     Consider the following mode of operation (which I call ``CBC+1''):
     
     CBC+1 is very similar to CBC, but instead of picking the $\iv$ at random, we
@@ -36,9 +43,6 @@
     Show that this scheme does not have IND-CPA.
 \end{problem}
 \begin{solution}
-    We show that CBC+1 is deterministic under a chosen plain text attack, and
-    hence does not have IND-CPA.
-
     Let $E(k, \cdot)$ be the encryption oracle that receives a set $S$ of
     plaintexts, picks a plaintext $m_i$ uniformly at random from the set $S$,
     and returns the the encryption $c=E(k, m_i)$.
@@ -95,7 +99,7 @@
     attacker knows that $c = E(k, m_0)$, otherwise $c = E(k, m_1)$.
 \end{enumerate}
 
-We have shown that under a chosen plaintext attack the attacker is able to
+We have shown that under a chosen plaintext attack, the attacker is able to
 distinguish which message was encrypted, and hence, by definition, the scheme
 does not have IND-CPA.\qed
 

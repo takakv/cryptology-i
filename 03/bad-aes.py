@@ -248,12 +248,15 @@ def iteratedGuessingGame(adv1,adv2,k):
 
 #it is your task to fill in this function
 def adv1():
-    ??
+    queryVector = [b"\x00" * 16, b"\x00" * 15 + b"\x01"]
     return queryVector
 
-#it is your task to fill in this function
-def adv2(resultVector,queryVector):
-    ??
+# it is your task to fill in this function
+def adv2(resultVector, queryVector):
+    badv = 0
+
+    if resultVector[0][:2] == resultVector[1][:2]:
+        badv = 1
     return badv
 
 
