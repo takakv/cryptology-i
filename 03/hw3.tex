@@ -1,0 +1,122 @@
+\documentclass{../homework}
+
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\newcommand{\Prx}[1]{\Pr\left[#1\right]}
+\newcommand{\ursample}{\overset{{\scriptscriptstyle\$}}{\leftarrow}}
+\newcommand{\st}{\text{ such that }}
+\input{../name.tex}
+
+\DeclareMathOperator*{\concat}{\scalerel*{\Vert}{\sum}}
+\newcommand\iv{\mathit{iv}}
+
+\begin{document}
+
+\homework{Homework \#2}
+{Due: 18.03.23}{\profname}{\myname}
+
+\begin{problem}
+    Consider the following mode of operation (which I call ``CBC+1''):
+    
+    CBC+1 is very similar to CBC, but instead of picking the $\iv$ at random, we
+    increase $iv$ after each encryption by one, otherwise the scheme is the
+    same. That is, at first we pick at random some initialization vector $\iv$.
+    After that, $\iv$ is increased by one at every encryption.
+    
+    Show that this scheme does not have IND-CPA.
+\end{problem}
+\begin{solution}
+    We show that CBC+1 is deterministic under a chosen plain text attack, and
+    hence does not have IND-CPA.
+
+    Let $E(k, \cdot)$ be the encryption oracle that receives a set $S$ of
+    plaintexts, picks a plaintext $m_i$ uniformly at random from the set $S$,
+    and returns the the encryption $c=E(k, m_i)$.
+
+    The oracle first generates a key $k\leftarrow KG()$ and picks the $\iv$ at
+    random. Then, for every encryption, the oracle re-uses the same key $k$.
+    After each encryption, the oracle increments $\iv$ by one, and uses the new
+    $\iv$ for the next encryption.
+
+    Let $\mathcal{M}$ be the message space, and $m_0, m_1 \in \mathcal{M}$ two
+    distinct messages picked by the attacker $A$.
+
+    We show that for a game involving only two messages, we can win the game
+    with complete certainty in only two steps.
+
+\begin{enumerate}
+    \item In the first step of the game, $A$ sends $m_0, m_1$ to the oracle
+    $E(k, \cdot)$, and receives $c = E(k, m_x)$, where $x\in\{0, 1\}$.
+
+    However, what $A$ really receives is
+    $$
+        c = c_0 \concat_{i=1} E(k, m_{x_i} \oplus c_{i-1}),\quad c_0 = \iv
+    $$
+    where $m_{x_i}$ represents the $i$-th block of $m_x$, $c_i$ represents the
+    $i$-th ciphertext block, and $||$ is the concatenation operator.
+
+    The attacker can recover the random $\iv$ from $c_0$.
+
+    \item The attacker prepares a new plaintext based on $m_0$. Namely, the
+    attacker splits $m_0$ into blocks, and replaces the first block\footnotemark
+    \ $m_{0_1}$ with $m_{0_1} \oplus (\iv + 1) \oplus \iv$. The attacker then
+    reassembles the message from the blocks, and obtains $m_0'$ with the
+    modified first block. In effect, we have $m_0' = (m_{0_1} \oplus (\iv + 1)
+    \oplus \iv) \concat_{i = 2} m_{0_i}$. Notice that $m_{0_i}' = m_{0_i}$ for
+    $i > 1$.
+    \footnotetext{Here we start indexing from $1$. There is no $m_{0_0}$.}
+
+    Next, $A$ sends $m_0'$ to the oracle, and receives $c'=E(k, m_0')$. During
+    encryption, the following happens:
+    \begin{align*}
+    c' &=
+    c_0' \concat_{i=1} E(k, m'_{0_i} \oplus c_{i-1}'),\quad c_0' = \iv'=\iv+1\\
+    &= c_0' || (m_{0_1}'\oplus\iv') \concat_{i=2} E(k, m_{0_i}\oplus c_{i-1}')\\
+    &= c_0' ||
+    \left((m_{0_1} \oplus (\iv + 1) \oplus \iv) \oplus (\iv + 1)\right)
+    \concat_{i=2} E(k, m_{0_i}\oplus c_{i-1}')\\
+    &= c_0' || (m_{0_1} \oplus \iv) \concat_{i=2} E(k, m_{0_i}\oplus c_{i-1}')\\
+    &= c_0' \concat_{i=1} E(k, m_{0_i}\oplus c_{i-1}),\quad c_0 = \iv = c_0' - 1
+    \end{align*}
+
+    We see that aside from $c_0'$, the encryption of $m_0'$ produces the same
+    ciphertext as if $m_0$ was encrypted with $iv$. As a result, the attacker
+    can now verify if $c_i = c_i'$ for all $i>1$. If this holds, then the
+    attacker knows that $c = E(k, m_0)$, otherwise $c = E(k, m_1)$.
+\end{enumerate}
+
+We have shown that under a chosen plaintext attack the attacker is able to
+distinguish which message was encrypted, and hence, by definition, the scheme
+does not have IND-CPA.\qed
+
+A practical example of this attack is shown in \texttt{cbc-plus-one.py}.
+
+\textit{Additional observation:}
+
+More generally, this attack extends to $n$ number of initial, distinct
+plaintexts provided to the oracle. In such cases, the game will take at most $n$
+steps to win.
+
+We can easily convince ourselves that this is true by giving the oracle $m_n'$,
+where $m_n' = (m_{n_1} \oplus (\iv + y) \oplus \iv) \concat_{i = 2} m_{n_i}$,
+and $y$ is the increment number of the $\iv$ for the given encryption. After the
+$n$-th step, we will have the ciphertexts for $n-1$ plaintexts, and hence can
+certainly win the game by comparing the plaintext-ciphertext pairs with the
+original challenge ciphertext.
+
+$n-1$ ciphertexts are sufficient, because if there is no match by then, the
+unmatched chosen plaintext will be the answer. Furthermore, the game can end
+before $n$ steps, as the attacker may stop at the first matched pair.
+\end{solution}
+
+\end{document}
