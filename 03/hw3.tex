@@ -23,13 +23,50 @@
 \begin{document}
 
 \homework{Homework \#2}
-{Due: 18.03.23}{\profname}{\myname}
+{Due: 04.04.23}{\profname}{\myname}
 
 \begin{problem}
+    In the file {\tt bad-aes.py} is a modified version of AES given in the
+    function {\tt bad-aes}.
     
+    In that version, the key is simply sampled randomly (not according to a
+    keyschedule algorithm) and in the AES, the Mix-Column step is omitted. Your
+    task is to distinguish this AES from a (lazily sampled) random permutation. 
+\begin{enumerate}
+    \item Write  the functions {\tt adv1} and {\tt adv2}. These
+    adversary-functions are put into a bigger program {\tt guessing-game}.
+    {\tt adv1} is supposed to produce a vector of plaintexts $(m_0,\dots,m_n)$
+    where each plaintext $m_i$ has a length of $16$ bytes. A random coin $b$ is
+    then flipped. If $b=0$, then the game lazily samples a permutation $\pi$ on
+    the message space and  gives to {\tt adv2} the vector
+    $(\pi(m_0),\dots,\pi(m_n))$. If $b=1$, then the game randomly samples a key
+    $k$ and  gives to {\tt adv2} the vector
+    $(\texttt{bad-aes}(k,m_0),\dots,\texttt{bad-aes}(k,m_n))$. The task of
+    {\tt adv2} is to output a bit $b'$ such that $\Pr[b=b']>\frac{1}{2}+\delta$
+    such that $\delta$ is large enough. (For example, a success probability of
+    $55\%$ is good enough.)
+    
+    The guessing-game is run for 3000 times and if your program is successful
+    more than 1650 times, you get the points. If you are not able to write the
+    adversaries, at least try to explain how one could tackle this problem.
+    
+    Try not to make your code run for too long.
+
+    \item The power that the adversary (that is, you) has in this game is
+    slightly weaker than it has in the game of Weak Pseudo-Random Permutation.
+    What capability or capabilities is this adversary missing?
+\end{enumerate}
 \end{problem}
 \begin{solution}
-    
+\begin{enumerate}
+    \item \textit{Implemented in code.} In the given implementation, when
+    provided with only 0-bytes, the round key addition result will have as many
+    set bytes as the key. Therefore, by setting only an additional byte in for a
+    second message, the encryption result will differ by a byte only. This is
+    clearly not the case for a random permutation, and allows us to win the
+    game, by detecting the one byte difference.
+    \item 
+\end{enumerate}
 \end{solution}
 
 \begin{problem}

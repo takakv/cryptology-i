@@ -248,6 +248,8 @@ def iteratedGuessingGame(adv1,adv2,k):
 
 #it is your task to fill in this function
 def adv1():
+    # A plaintext of only 0 bytes, and a plaintext with only
+    # one byte set (see description in answer sheet).
     queryVector = [b"\x00" * 16, b"\x00" * 15 + b"\x01"]
     return queryVector
 
@@ -255,6 +257,12 @@ def adv1():
 def adv2(resultVector, queryVector):
     badv = 0
 
+    # With high probability, it is enough to check whether
+    # the first two bytes match. Given an iteration count high
+    # enough, no additional checks are needed for distinguishing
+    # the case.
+    # To be theoretically accurate, one would have to check whether
+    # only one byte differs between both vectors.
     if resultVector[0][:2] == resultVector[1][:2]:
         badv = 1
     return badv
