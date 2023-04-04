@@ -22,7 +22,7 @@
 
 \begin{document}
 
-\homework{Homework \#2}
+\homework{Homework \#3}
 {Due: 04.04.23}{\profname}{\myname}
 
 \begin{problem}
@@ -65,7 +65,15 @@
     second message, the encryption result will differ by a byte only. This is
     clearly not the case for a random permutation, and allows us to win the
     game, by detecting the one byte difference.
-    \item 
+
+    \item In this game, the adversary is not allowed to be adaptive. That is,
+    while the adversary may send any number of queries to the oracle, these
+    queries must be made at the same time. For any subsequent set of queries,
+    the key, and hence the apparent permutation changes. In essence, here, the
+    adversary only has one attempt at a time to craft a payload that wins them
+    the game. Conversely, in a game of Weak Pseudo-Random Permutation, the
+    adversary can be adaptive, allowing them to tune the payload to a response
+    in an attempt to win the game.
 \end{enumerate}
 \end{solution}
 
