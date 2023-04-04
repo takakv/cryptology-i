@@ -34,7 +34,7 @@ def construct_payload(m: bytes, iv: bytes, iv_initial: bytes):
 
 def main():
     ok_counter = 0
-    num_iterations = 200
+    num_iterations = 3000
 
     for i in range(num_iterations):
         # Oracle stuff
