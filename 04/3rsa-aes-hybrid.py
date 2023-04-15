@@ -104,7 +104,10 @@ def hyb_dec(sk,c):
     return m
 
 def adv(pk,c):
-    m = b"put the right message here"
+    rsa_pk_k = c[0]
+    # We can recover the key simply with a cube root (explanation in doc)
+    k = sympy.integer_nthroot(rsa_pk_k, 3)[0]
+    m = aes_cbc_dec(k, c[1])
     return m
 
 def test_adv():

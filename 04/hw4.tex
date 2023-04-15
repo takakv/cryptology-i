@@ -50,6 +50,27 @@
 \end{problem}
 \begin{solution}
     \textit{Implemented in code.}
+    Part of RSA's security relies on the assumption that given well chosen
+    values, there is no efficient algorithm for inverse modular exponentiation
+    modulo semiprimes. That is, for large numbers, there is no efficient way to
+    recover $m$ from $c=m^e \bmod N$, given only $N, e, c$, and where the prime
+    factors $p, q$ of $N$ are not known.
+
+    In the provided scheme, $N$ is the product of two $1024$-bit
+    primes\footnotemark, and so $N$ is a $2048$-bit semiprime. We also have that
+    $k$ is a $256$-bit number (AES key), and $e=3$. As such, for the RSA
+    encryption of the AES key, we have $c = k^3 \bmod N$.
+    \footnotetext{The code implementation actually generates $1025$-bit primes,
+    and so $N$ is a $2049$-bit semiprime.}
+
+    The catch is, that the largest number that can be represented by a $256$-bit
+    number is $2^{256} - 1$. Let $l = 2^{256}$, and so
+    $l^3 = \left(2^{256}\right)^3 = 2^{256*3} = 2^{768}$. Clearly $l^3 > k^3$.
+    Since $N$ is a $2048$-bit number, $N \ge 2^{2047} > l^3 > k^3$, and so
+    $c = k^3\bmod N = k^3$. As such, we can simply recover $k = \sqrt[3]{c}$,
+    since fairly efficient algorithms exist for recovering cube roots. Then, we
+    simply decrypt the AES encrypted message using the recovered symmetric AES
+    key.
 \end{solution}
 
 \begin{problem}
