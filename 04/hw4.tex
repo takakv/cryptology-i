@@ -65,7 +65,7 @@
     \footnotetext{The code implementation actually generates $1025$-bit primes,
     and so $N$ is a $2049$-bit or $2050$-bit semiprime.}
 
-    The catch is, that the largest number that can be represented by a $256$-bit
+    The catch is that the largest number that can be represented by a $256$-bit
     number is $2^{256} - 1$. Let $l = k + 1 = 2^{256}$, and so
     $l^3 = \left(2^{256}\right)^3 = 2^{256*3} = 2^{768}$. Clearly $l^3 > k^3$.
     Since $N$ is a $2048$-bit number, $N \ge 2^{2047} > 2^{768} > k^3$, and so
@@ -134,8 +134,7 @@
             a^i := \left(\sum_{k = 1}^{i} a\right)\bmod p
             = ia \bmod p,
         \end{equation}
-        where ``$ia\bmod p$'' denotes multiplication of modulo $p$ of $i$ and
-        $a$.
+        where ``$ia\bmod p$'' denotes multiplication modulo $p$ of $i$ and $a$.
         \item From $b := a^i$ and definition \eqref{eq:powdef} we have that $ia
         \equiv b \pmod{p}$, with respect to multiplication modulo $p$.
 
@@ -222,7 +221,7 @@
 \end{problem}
 \begin{solution}
     \textit{Implemented in code.}
-    
+
     Because $ed\equiv 1\pmod{\varphi(N)}$, then
     $ed-1\equiv0\pmod{\varphi(N)}$,
     and so $\varphi(N) | (ed - 1)$. Let $k_1 = e_1d_1 - 1$ and
