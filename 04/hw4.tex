@@ -64,9 +64,9 @@
     and so $N$ is a $2049$-bit semiprime.}
 
     The catch is, that the largest number that can be represented by a $256$-bit
-    number is $2^{256} - 1$. Let $l = 2^{256}$, and so
+    number is $2^{256} - 1$. Let $l = k + 1 = 2^{256}$, and so
     $l^3 = \left(2^{256}\right)^3 = 2^{256*3} = 2^{768}$. Clearly $l^3 > k^3$.
-    Since $N$ is a $2048$-bit number, $N \ge 2^{2047} > l^3 > k^3$, and so
+    Since $N$ is a $2048$-bit number, $N \ge 2^{2047} > 2^{768} > k^3$, and so
     $c = k^3\bmod N = k^3$. As such, we can simply recover $k = \sqrt[3]{c}$,
     since fairly efficient algorithms exist for recovering cube roots. Then, we
     simply decrypt the AES encrypted message using the recovered symmetric AES
@@ -187,4 +187,38 @@
     \end{enumerate}
 \end{solution}
 
+\begin{problem}
+    We note that in RSA, we use the values  $d,e$ and $N$ for encrypting and
+    decrypting but not the factors of $N$ --- thus, in essence, we could  devise
+    a scheme where some central authority picks the values $p$ and $q$, computes
+    $N=pq$ and $\varphi(N)=(p-1)(q-1)$, and uses  those to randomly sample
+    $e_1,e_2,\dots, e_k$ and obtain pairs of keys $(d_1,e_1), (d_2,e_k),\dots,
+    (d_k,e_k)$. Then the authority could distribute the $d_1$ to party $P_1$,
+    $d_2$ to $P_2$ etc and publish the $e_i$ as the public keys. Then each party
+    $P_i$ could use $d_i$ as their secret key. In addition, because everyone is
+    operating on the same algebraic structure --- integers modulo $N$ --- there
+    would be gains in efficiency.
+    
+    This scenario has been described as a Python program below that has been
+    also uploaded as  \texttt{shared-n-rsa.py} to the course webpage. Your task
+    is to write an adversary  \texttt{adv1} in that program, that, given two
+    pairs of keys $(d_1,e_1)$ and $(d_2,e_2)$ as well as the public parameters,
+    is able to factor $N$ with a reasonable probability. This describes the
+    scenario where two parties collaborate and are able to obtain the secret
+    keys of other parties.
+    
+    Your adversary does not have to succeed every time but should at least be
+    able to occasionally succeed and not take too much time. You can pick how
+    many tests you want to run, if you obtain at least one success with the
+    total running time of a few minutes, this will be considered a valid
+    solution. Use the function \texttt{testSharedNRSA} for testing, however, do
+    use $50$ for the value of \texttt{bits} in
+    \texttt{testSharedNRSA(bits,times,adv)}.
+    
+    Note: It is in fact possible to factor $N$ knowing only one pair
+    $(d_1,e_1)$, however, this is more complicated.
+\end{problem}
+\begin{solution}
+    
+\end{solution}
 \end{document}
