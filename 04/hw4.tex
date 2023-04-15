@@ -50,18 +50,20 @@
 \end{problem}
 \begin{solution}
     \textit{Implemented in code.}
+    \iffalse
     Part of RSA's security relies on the assumption that given well chosen
-    values, there is no efficient algorithm for inverse modular exponentiation
-    modulo semiprimes. That is, for large numbers, there is no efficient way to
-    recover $m$ from $c=m^e \bmod N$, given only $N, e, c$, and where the prime
-    factors $p, q$ of $N$ are not known.
+    values, there is no efficient algorithm for finding the modular discrete
+    logarithm modulo semiprimes. That is, for large numbers, there is no
+    efficient way to recover $m$ from $c=m^e \bmod N$, given only $N, e, c$, and
+    where the prime factors $p, q$ of $N$ are not known.
+    \fi
 
     In the provided scheme, $N$ is the product of two $1024$-bit
     primes\footnotemark, and so $N$ is a $2048$-bit semiprime. We also have that
     $k$ is a $256$-bit number (AES key), and $e=3$. As such, for the RSA
     encryption of the AES key, we have $c = k^3 \bmod N$.
     \footnotetext{The code implementation actually generates $1025$-bit primes,
-    and so $N$ is a $2049$-bit semiprime.}
+    and so $N$ is a $2049$-bit or $2050$-bit semiprime.}
 
     The catch is, that the largest number that can be represented by a $256$-bit
     number is $2^{256} - 1$. Let $l = k + 1 = 2^{256}$, and so
@@ -192,7 +194,7 @@
     decrypting but not the factors of $N$ --- thus, in essence, we could  devise
     a scheme where some central authority picks the values $p$ and $q$, computes
     $N=pq$ and $\varphi(N)=(p-1)(q-1)$, and uses  those to randomly sample
-    $e_1,e_2,\dots, e_k$ and obtain pairs of keys $(d_1,e_1), (d_2,e_k),\dots,
+    $e_1,e_2,\dots, e_k$ and obtain pairs of keys $(d_1,e_1), (d_2,e_2),\dots,
     (d_k,e_k)$. Then the authority could distribute the $d_1$ to party $P_1$,
     $d_2$ to $P_2$ etc and publish the $e_i$ as the public keys. Then each party
     $P_i$ could use $d_i$ as their secret key. In addition, because everyone is
@@ -200,8 +202,8 @@
     would be gains in efficiency.
     
     This scenario has been described as a Python program below that has been
-    also uploaded as  \texttt{shared-n-rsa.py} to the course webpage. Your task
-    is to write an adversary  \texttt{adv1} in that program, that, given two
+    also uploaded as \texttt{shared-n-rsa.py} to the course webpage. Your task
+    is to write an adversary \texttt{adv1} in that program, that, given two
     pairs of keys $(d_1,e_1)$ and $(d_2,e_2)$ as well as the public parameters,
     is able to factor $N$ with a reasonable probability. This describes the
     scenario where two parties collaborate and are able to obtain the secret
@@ -219,6 +221,34 @@
     $(d_1,e_1)$, however, this is more complicated.
 \end{problem}
 \begin{solution}
+    \textit{Implemented in code.}
     
+    Because $ed\equiv 1\pmod{\varphi(N)}$, then
+    $ed-1\equiv0\pmod{\varphi(N)}$,
+    and so $\varphi(N) | (ed - 1)$. Let $k_1 = e_1d_1 - 1$ and
+    $k_2 = e_2d_2 - 1$. Then, $\varphi(N) | k_1$ and $\varphi(N) | k_2$, i.e.,
+    $\varphi(N)$ is a common factor of $k_1, k_2$.
+
+    With a little bit of luck, $\varphi(N) = \verb|gcd|(k_1, k_2)$. This will
+    not always be the case, but as we do not have to succeed every time, we 
+    assume here, for simplicity, that this will hold enough times to prove that
+    the attack works.
+
+    We have $\varphi(N) = (p-1)(q-1) = pq - p - q - 1 = (N+1)-(p+q)$ and so
+    $p = (N + 1) - \varphi(N) - q$. By replacing $p$ in $N = pq$, we have
+    $$
+        N = q(N + 1 - \varphi(N)) - q^2,
+    $$
+    and so
+    $$
+        q^2 + -q(N + 1 -\varphi(N)) + N = 0.
+    $$
+
+    We thus have
+    $$
+        q = \frac{(N + 1 -\varphi(N))\pm\sqrt{\Delta}}{2},\quad
+        \Delta= \abs{N + 1 -\varphi(N)}^2-4N
+    $$
+    and we can recover $p$.
 \end{solution}
 \end{document}

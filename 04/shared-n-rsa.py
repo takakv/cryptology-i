@@ -58,7 +58,13 @@ def testSolution(N,p,q):
 
 #it is your job to define this adversary
 def adv1(bits, N, e1, d1, e2,d2):
-    ???
+    k1 = (e1 * d1) - 1
+    k2 = (e2 * d2) - 1
+    phi_candidate = math.gcd(k1, k2)
+    b_val = N + 1 - phi_candidate
+    delta = pow(b_val, 2) - (4 * N)
+    q = (b_val + math.isqrt(delta)) // 2
+    p = N // q
     return (p,q)
     
 #this is the game    
