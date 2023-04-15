@@ -1,0 +1,169 @@
+\documentclass{../homework}
+
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\newcommand{\Prx}[1]{\Pr\left[#1\right]}
+\newcommand{\ursample}{\overset{{\scriptscriptstyle\$}}{\leftarrow}}
+\newcommand{\st}{\text{ such that }}
+\input{../name.tex}
+
+\DeclareMathOperator*{\concat}{\scalerel*{\Vert}{\sum}}
+\newcommand\iv{\mathit{iv}}
+
+\begin{document}
+
+\homework{Homework \#4}
+{Due: 15.04.23}{\profname}{\myname}
+
+\begin{problem}
+    A common variant of textbook RSA is the following: During key generation,
+    the modulus $N$ is chosen as usual. We chose $e$ as $e:=3$ (instead of
+    random). Then $d$ is chosen with $ed\equiv 1\pmod {\varphi(N)}$ (as usual).
+    This is implemented by the Python functions \verb|rsa_keygen|,
+    \verb|rsa_enc|, \verb|rsa_dec| below.
+    
+    We use this in a ``hybrid encryption'', which first picks an AES key $k$,
+    encrypts it with RSA, and then encrypts the actual message with AES using
+    the key $k$. (Functions \verb|hyb_enc|, \verb|hyb_dec|.)
+    
+    The  file  with the name {\tt 3rsa-aes-hybrid.py} on the lecture webpage
+    contains these algorithms.
+    
+    Your task is to write an adversary that, given the public key \verb|pk|, and
+    the hybrid encryption \verb|c| of some message \verb|m|, finds \verb|m|.
+    That is, fill in the function body of the function \verb|adv| below so that
+    the function \verb|test_adv| prints
+    \verb|Success. The adversary broke the scheme|.
+    
+    Hint: Note that $k<\sqrt[3]N$ here. This makes it much simpler to find $k$
+    given $k^3\pmod N$!
+\end{problem}
+\begin{solution}
+    \textit{Implemented in code.}
+\end{solution}
+
+\begin{problem}
+    Recall that ElGamal can be defined with respect to many different groups.
+    Here we give an example of a group one should not use.
+    
+    Let $p>0$ be a large prime. Let $G:=\{0,\dots,p-1\}$. The group operation is
+    defined as follows: For $a,b\in G$, let $a\cdot b:=(a+b\bmod p)$.\footnote{%
+    This is notationally highly confusing, of course, because it looks like we
+    claim that plus and times are the same thing. But keep in mind that we are
+    defining a new operation on $G$ here, and it is just a notational convention
+    that we write it like multiplication. In particular, do not confuse $a\cdot
+    b$ (the group operation) with $a\cdot b\bmod p$ (actual multiplication
+    modulo $p$). Often one would use the symbol $+$, but that would be confusing
+    as well because in our definitions of ElGamal we used multiplicative
+    notation. If you wish, you can introduce a different symbol for the group
+    operation, say $\circ$, and then the definition becomes $a\circ b:=(a+b\bmod
+    p)$. You are free to do it either way in your solution, but make sure that
+    you do not mix up the different meanings of $a\cdot b$!}
+    Recall that $a^i$ for $i\in\mathbb{N}$ is defined as
+    $a^i:=a\cdot a\cdot a\cdot a\cdot a\cdot \dots\cdot a$ ($i$-times).
+    \begin{enumerate}
+    \item What is $a^i$ written in terms of $+$? (I.e., when unfolding the
+    definition of the group operation, and using modular arithmetic.) This
+    should be quite a simple operation!
+     
+    \item\label{dlog} Show that there is an efficient algorithm for solving the
+    discrete logarithm problem in $G$. That is, given $a\in G$ and $b:=a^i\in G$
+    (but not given $i$), the algorithm should compute $i$.
+    
+    Note: You can use, without proof, the fact that there is an efficient
+    algorithm (Extended Euclidean Algorithm, EEA) that, given $p$ and
+    $x\in\{1,\dots,p-1\}$ computes $y$ with $xy\equiv 1\mod p$. (This is
+    multiplication modulo $p$, not the group operation. The fact that inverting
+    works for all $x$ uses that $p$ is prime.)
+    
+    \item\label{breakelgamal} Show that the ElGamal encryption scheme built on
+    $G$ is not secure. More specifically, given the public key and an encryption
+    of a message, find that message. 
+    \end{enumerate} 
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item For addition in modular arithmetic, we have the property
+        $$(a + b) \bmod c = [(a \bmod c) + (b\bmod c)] \bmod c.$$
+
+        Therefore we have $a\cdot b = (a + b) \bmod p = [(a\bmod p) +
+        (b\bmod p)] \bmod p$. If we choose $b = a$, then $a\cdot a = a^2 = (a +
+        a)\bmod p$. It follows that
+        \begin{align*}
+            a^3 = a^2 \cdot a &= [((a + a)\bmod p) + a] \bmod p\\
+            &= [(((a + a)\bmod p)\bmod p) + (a \bmod p)]\bmod p\\
+            &= [((a + a)\bmod p) + (a \bmod p)]\bmod p\\
+            &= [(a + a) + a]\bmod p = (a + a + a) \bmod p.
+        \end{align*}
+
+        More generally, for $i \neq 0$, we have
+        \begin{equation}\label{eq:powdef}
+            a^i := \left(\sum_{k = 1}^{i} a\right)\bmod p
+            = ia \bmod p,
+        \end{equation}
+        where ``$ia\bmod p$'' denotes multiplication of modulo $p$ of $i$ and
+        $a$.
+        \item From $b := a^i$ and definition \eqref{eq:powdef} we have that $ia
+        \equiv b \pmod{p}$, with respect to multiplication modulo $p$.
+
+        If we are able to compute $a^{-1}$ such that $aa^{-1}\equiv 1\pmod{p}$,
+        we have $ba^{-1}\equiv iaa^{-1} \equiv i \pmod{p}$ and we can recover
+        $i$. Using the EEA, we can indeed efficiently calculate $a^{-1}$ because
+        we are given $a, b, p$. There is hence an efficient algorithm for
+        solving the (additive) discrete logarithm problem in $G$, since the EEA
+        is efficient, and modular multiplication is efficient.\qed
+
+        \item Let us remind ourselves of the generic group based ElGamal
+        cryptosystem. In a group $G$ of order $p$ with $p$ prime, pick a
+        generator $g$ of $G$. Then, for a secret value $x\in G$, compute the
+        public value $h = g^x$. The values $p, G, g, h$ are public.
+        
+        To encrypt a message $m\in G$, pick uniformly at random $y\ursample G$,
+        and form the tuple $(c_1,c_2) := (g^y, mh^y)$. In the given group, we 
+        have $(g^y, mh^y) := (yg \bmod p, (m(yh \bmod p))\bmod p)$.
+        
+        We show that in the given group $G$ we can recover a message without
+        knowing the secret $x$, though the same attack could be used to recover
+        the secret $x$ and enable recovery of all messages.
+
+        We showed in (2.) that there is an efficient algorithm for solving the
+        DLP in $G$. Since $g$ is public\footnotemark, we can efficiently find
+        $g^{-1}\in G$ s.t. $gg^{-1}\equiv 1\pmod{p}$ and then $c_1g^{-1} \equiv
+        ygg^{-1} \equiv y \pmod{p}$.
+        
+        We can then compute using EEA the modular inverse $(yh)^{-1}$ of $yh$
+        (the multiplication modulo $p$ of $y$ and $h$). As a result, we have
+        $c_2(yh)^{-1} \equiv m(yh)(yh)^{-1} \equiv m \pmod{p}$ and we have
+        recovered the message without the secret key.\qed
+
+        Let us illustrate this with an example in a small group with $p = 11$,
+        and $g=2$. We pick $x = 7$ and so
+        $h = g^x = 2^7 := (2 + 2 + 2 + 2 + 2 + 2+ 2) \bmod 11 =3$. We then pick
+        the message $m = 5$ and the ephemeral randomness $y = 9$ and encrypt the
+        message. The resulting ciphertext is $(c_1, c_2) := (yg \bmod p,
+        (m(yh \bmod p))\bmod p) = (18\bmod 11, (5 (27 \bmod 11)) \bmod 11) =
+        (7, 25 \bmod 11) = (7, 3)$.
+
+        We have $g^{-1}\equiv 2^{-1} \equiv -5 \equiv 6 \pmod{11}$, and so
+        $y\equiv c_1g^{-1}\equiv 42 \equiv 9 \pmod{11}$ and we correctly
+        recovered $y = 9$. We can then calculate $yh \equiv 27\equiv 5\pmod{11}$
+        and so $(yh)^{-1} \equiv -2 \equiv 9 \pmod{11}$.
+
+        Finally $m\equiv c_2(yh)^{-1} \equiv 27 \equiv 5\pmod{11}$ and we
+        correctly recovered the message $m = 5$.
+
+        \footnotetext{The public key is the tuple $(G, g, h)$.}
+    \end{enumerate}
+\end{solution}
+
+\end{document}
