@@ -1,0 +1,178 @@
+\documentclass{../homework}
+
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\newcommand{\Prx}[1]{\Pr\left[#1\right]}
+\newcommand{\ursample}{\overset{{\scriptscriptstyle\$}}{\leftarrow}}
+\newcommand{\st}{\text{ such that }}
+\input{../name.tex}
+
+\newcommand{\rgets}{\stackrel{\mathdollar}\leftarrow}
+\newcommand{\Enc}{\text{Enc}}
+\newcommand{\Dec}{\text{Dec}}
+
+\begin{document}
+
+\homework{Homework \#5}
+{Due: 25.04.23}{\profname}{\myname}
+
+\begin{problem}
+    Consider the following hash function $H_D$. Let $G$ be a group where the
+    discrete logarithm is hard and let $g$ be a fixed generator in that group.
+    Let the group size of $G$ be $k$. Let $k$ have $n$ bits, with
+    $2^{n-1}<k<2^n$. $k$ is publicly known.
+
+    More specifically, the hardness of the discrete logarithm means that we have
+    for any $\tau$-time adversary $A$ that
+    $$\Pr[y=g^{a'} :a \rgets\{1,\dots,|G|-1\}, y\gets g^a,
+    a'\gets A(G,k,g,y)]\leq \varepsilon.$$
+    
+    Here $\tau$ is not very big (if you prefer more formal words, $\tau$ is
+    bounded by some polynomial function in $n$) and $\varepsilon$ is
+    very-very-very small (if you prefer more formal wording, $\varepsilon$ is
+    exponentially small in $n$).
+    
+    Let $iv$ be a  fixed $n$-bit integer. %Let $g$ a fixed generator for $G$.
+    
+    This is a hash function built analogously to the iterated hash construction.
+    
+    Now, to compute the $H_{D,iv}$ for a fixed $iv$ we do the following.
+    Given an input $m$ with $\ell n$ bits, we chop it into $n$-bit blocks
+    $m_1,m_2,\dots,m_{\ell}$. We can consider all  $m_i$ as  $n$-bit integers. 
+    
+    Now, let $h_0:=g^{iv}$. Let
+    $h_i:=h_{i-1}^{m_i}$ for all $i\in \{1,\dots,\ell\}$. We define
+    $H_{D,iv}(m):=h_{\ell}$. Essentially this is very similar to the $H_{IH}$
+    construction, but there we used  $h_i:=F(h_{i-1},m_i)$, but here we use
+    $h_i:=h_{i-1}^{m_i}$.
+
+    \begin{enumerate}
+        \item  Is this scheme collision-resistant for messages with the same
+        length? That is, does it hold that for any $\tau'$-time adversary $A$,
+        you have that $$\Pr[m\neq m'\& H_{D,iv}(m)=H_{D,iv}(m')\&  |m|=|m'| :$$
+        $$
+        iv \rgets\{1,\dots,|G|-1\},  (m,m')\gets A(G,g,k,iv) ]\leq\varepsilon'
+        $$
+        where $\varepsilon'$ is very small  and $\tau'$ is not too big? (roughly
+        speaking, $\varepsilon'$ should be not too different from $\varepsilon$
+        and $\tau'$ should not be too different from $\tau$)
+        
+        If yes, explain why, preferably reducing the security to hardness of the
+        DLOG. If no, provide an attack.
+
+        \item Is this scheme preimage-resistant? More specifically, does it hold
+        for any $\tau'$-time adversary $A$, that
+        $$
+            \Pr[H_{D,iv}(x)=y :iv \rgets\{1,\dots,|G|-1\},y \rgets G, x\gets
+            A(G,g,k,iv,y) ]\leq \varepsilon'
+        $$
+        where $\varepsilon'$ is very small  and $\tau'$ is not too big? (roughly
+        speaking, $\varepsilon'$ should be not too different from $\varepsilon$
+        and $\tau'$ should not be too different from $\tau$)
+        If yes, explain why, preferably reducing the security to hardness of the
+        DLOG. If no, provide an attack.
+        
+        \item Is this scheme second preimage-resistant? More specifically, fix
+        $\ell$ to be some integer larger than or equal to $2$. Does it hold that
+        $$\Pr[m\neq m'\& H_{D,iv}(m)=H_{D,iv}(m')\&  |m|=|m'| :$$
+        $$
+            iv \rgets\{1,\dots,|G|-1\},m\gets \{0,1\}^{\ell n}, m'\gets
+            A(G,g,k,iv,m) ]\leq \varepsilon'
+        $$
+        where $\varepsilon'$ is very small  and $\tau'$ is not too big? (roughly
+        speaking, $\varepsilon'$ should be not too different from $\varepsilon$
+        and $\tau'$ should not be too different from $\tau$)
+        If yes, explain why, preferably reducing the security to hardness of the
+        DLOG. If no, provide an attack.
+        \end{enumerate}
+
+        Hint: Generally, if you want to reduce the security of a scheme $A$ to
+        the hardness of some other scheme/game $B$, you often need to play a
+        middleman between the challenger of $B$ and the adversary of $A$.
+        The argument goes approximately like this. Assume by contradiction that
+        there exists an efficient adversary against $A$, let's call it $Adv_A$.
+        Now we want to use $Adv_A$ as a tool or subroutine to break the game of
+        $B$ when talking to the challenger in game $B$. We might have to process
+        the messages that we give to $Adv_A$ so they would have the right format
+        and  may also have to do things with the messages we get back from
+        $Adv_A$ to compute what we need to compute for the game $B$.
+\end{problem}
+\begin{solution}
+    The hashing scheme is built as follows:
+    $$
+        h_0 = g^{iv},\quad
+        h_1 = h_0^{m_1} = \left(g^{iv}\right)^{m_1} = g^{iv \cdot m_1},\quad
+        h_2 = h_1^{m_2} = \left(g^{iv\cdot m_1}\right)^{m_2} =
+        g^{iv\cdot m_1 \cdot m_2},\quad \dots,
+    $$
+    and more generally,
+    \begin{equation}\label{eq:1}
+        H_{D, iv}(m) = h_l = g^{iv\cdot \Pi_{i = 1}^l m_i}.
+    \end{equation}
+
+    \begin{enumerate}
+        \item Let us show that the scheme is not collision-resistant in $G$ for
+        messages of the same length. That is, the adversary can craft $m'\neq m$
+        such that $|m'| = |m|$ and with $H_{D, iv}(m') \neq H_{D, iv}(m)$.
+        \begin{enumerate}
+            \item From \eqref{eq:1} we see that breaking collision resistance is
+            equivalent to the adversary finding $m' \neq m$ such that
+            \begin{equation*}\label{eq:2}
+                \Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i,
+            \end{equation*}
+            because
+            $$
+                \Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i \Rightarrow
+                g^{iv\cdot \Pi_{i = 1}^l m'_i} = g^{iv\cdot \Pi_{i = 1}^l m_i}
+                \Rightarrow h'_l = h_l \Rightarrow H_{D, iv}(m') = H_{D, iv}(m).
+            $$
+            \item Because multiplication is commutative, we have
+            $$
+                \Pi_{i=1}^l x_i = \Pi_{i=1}^{l} x_{l - i + 1}.
+            $$
+            and so, if we pick $m'$ such that $m'_i = m_{l - i + 1}$, clearly
+            $m'\neq m$ and $\Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i$, with
+            $|m'|=|m|$.
+        \end{enumerate}
+
+        As such, from (b) we can construct a message that satisfies (a), and so
+        the scheme is not collision resistant for messages of the same length.
+        \qed
+
+        \item Let us show that the scheme is first preimage-resistant in $G$.
+
+        Assume that there exists and adversary who, given $y\rgets G$, can
+        output $x$ s.t. $H_{D, iv}(x) = y$.
+
+        From \eqref{eq:1}, this means that the adversary can find $x$ s.t.
+        $$
+            H_{D,iv}(x)=h_l=g^{iv\cdot\Pi_{i = 1}^lx_i} = y.
+        $$
+        
+        If we fix $e_x = iv\cdot\Pi_{i = 1}^lx_i$, we have that the adversary
+        can produce $x$ s.t. $g^{e_x}=y$. This means that given $g, y$, the
+        adversary can find $e_x$, and construct $x$ to match. Finding $e_x$ is
+        equivalent to the discrete logarithm problem which is defined to be hard
+        in $G$. As such, because the adversary is bound by some polynomial
+        function, we know that the adversary cannot efficiently solve the DLOG,
+        which contradicts our initial assumption.
+
+        Therefore, by contradiction, we showed that there can be no polynomially
+        bound adversary to break the first-preimage resistance of $H_{D, iv}$ in
+        $G$.\qed
+
+        \item Let us show that the scheme is not second preimage-resistant in
+        $G$.
+    \end{enumerate}
+\end{solution}
+\end{document}
