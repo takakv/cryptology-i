@@ -78,7 +78,8 @@
         $$
         where $\varepsilon'$ is very small  and $\tau'$ is not too big? (roughly
         speaking, $\varepsilon'$ should be not too different from $\varepsilon$
-        and $\tau'$ should not be too different from $\tau$)
+        and $\tau'$ should not be too different from $\tau$).
+
         If yes, explain why, preferably reducing the security to hardness of the
         DLOG. If no, provide an attack.
         
@@ -91,7 +92,8 @@
         $$
         where $\varepsilon'$ is very small  and $\tau'$ is not too big? (roughly
         speaking, $\varepsilon'$ should be not too different from $\varepsilon$
-        and $\tau'$ should not be too different from $\tau$)
+        and $\tau'$ should not be too different from $\tau$).
+
         If yes, explain why, preferably reducing the security to hardness of the
         DLOG. If no, provide an attack.
         \end{enumerate}
@@ -123,31 +125,42 @@
     \begin{enumerate}
         \item Let us show that the scheme is not collision-resistant in $G$ for
         messages of the same length. That is, the adversary can craft $m'\neq m$
-        such that $|m'| = |m|$ and with $H_{D, iv}(m') \neq H_{D, iv}(m)$.
-        \begin{enumerate}
-            \item From \eqref{eq:1} we see that breaking collision resistance is
-            equivalent to the adversary finding $m' \neq m$ such that
-            \begin{equation*}\label{eq:2}
-                \Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i,
-            \end{equation*}
-            because
-            $$
-                \Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i \Rightarrow
-                g^{iv\cdot \Pi_{i = 1}^l m'_i} = g^{iv\cdot \Pi_{i = 1}^l m_i}
-                \Rightarrow h'_l = h_l \Rightarrow H_{D, iv}(m') = H_{D, iv}(m).
-            $$
-            \item Because multiplication is commutative, we have
-            $$
-                \Pi_{i=1}^l x_i = \Pi_{i=1}^{l} x_{l - i + 1}.
-            $$
-            and so, if we pick $m'$ such that $m'_i = m_{l - i + 1}$, clearly
-            $m'\neq m$ and $\Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i$, with
-            $|m'|=|m|$.
-        \end{enumerate}
+        with $|m'| = |m|$ such that $H_{D, iv}(m') \neq H_{D, iv}(m)$.
 
-        As such, from (b) we can construct a message that satisfies (a), and so
-        the scheme is not collision resistant for messages of the same length.
-        \qed
+        A trivial attack is to take two messages of $n$ bits, one which is $0$,
+        and the other which is $k$. Both messages have the leading $0$ bits
+        needed (if any) to make them of size $n$. This changes their size
+        without changing their mathematical value.
+
+        Let $e$ be the identity element of $G$. Then, the hashing is
+        \begin{align*}
+            H_{D, iv}(0) &= \left(g^{iv}\right)^{0}=e,\quad
+            \text{because $g^{iv}$ is a group element},\\
+            H_{D, iv}(k) &= \left(g^{iv}\right)^{k} = e,\quad
+            \text{for the same reason},
+        \end{align*}
+        and we have $H_{D, iv}(0)=H_{D, iv}(k)$ and we have found a
+        collision, because $k \neq 0$.
+
+        Then, for any two messages $m, m'$ with $m\neq m'$ and $|m| = |m'|$, we
+        append the $0$-message $M_0$ to the end of $m$, and the $k$-message
+        $M_{k}$ to the end of $m'$. Because $M_0$ and $M_{k}$ are both $n$-bits
+        long, we still have $\big|m||M_0\big| = \big|m||M_{k}\big|$ where $||$
+        denotes bit-string concatenation.
+
+        From \eqref{eq:1} and the $M_0, M_k$ example we have that
+        \begin{align*}
+            H_{D,iv}(m||M_0) &= \left(H_{D,iv}(m)\right)^{M_0}=
+            \left(g^{iv\cdot \Pi_{i = 1}^l m_i}\right)^{0} = e,\\
+            H_{D,iv}(m'||M_{k}) &=
+            \left(H_{D,iv}(m')\right)^{M_{k}}=
+            \left(g^{iv\cdot \Pi_{i = 1}^l m'_i}\right)^{k} = e,
+        \end{align*}
+        because $g^{iv\cdot \Pi_{i = 1}^l m_i}$ and
+        $g^{iv\cdot \Pi_{i = 1}^l m'_i}$ are group elements. $H_{D,iv}(m||M_0)=
+        H_{D,iv}(m'||M_{k})$ and so we can easily find two distinct colliding
+        messages. The scheme is hence not collision-resistant for messages of
+        the same length.\qed
 
         \item Let us show that the scheme is first preimage-resistant in $G$.
 
@@ -172,7 +185,34 @@
         $G$.\qed
 
         \item Let us show that the scheme is not second preimage-resistant in
-        $G$.
+        $G$ for messages of length $l\ge2$. That is, the adversary can craft any
+        two $m, m'$ with $m\neq m'$ and $|m'| = |m| = ln$ bits, with $l\ge2$,
+        such that $H_{D,iv}(m') \neq H_{D,iv}(m)$.
+
+        \begin{enumerate}
+            \item From \eqref{eq:1} we see that finding a collision is
+            equivalent to the adversary finding $m' \neq m$ such that
+            $$
+                \Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i,
+            $$
+            because
+            $$
+                \Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i \Rightarrow
+                g^{iv\cdot \Pi_{i = 1}^l m'_i} = g^{iv\cdot \Pi_{i = 1}^l m_i}
+                \Rightarrow h'_l = h_l \Rightarrow H_{D, iv}(m') = H_{D, iv}(m).
+            $$
+            \item Because multiplication is commutative, we have
+            $$
+                \Pi_{i=1}^l x_i = \Pi_{i=1}^{l} x_{l - i + 1}.
+            $$
+            and so, if we pick $m'$ such that $m'_i = m_{l - i + 1}$, clearly
+            $m'\neq m$ and $\Pi_{i=1}^l m_i' = \Pi_{i=1}^l m_i$, with
+            $|m'|=|m|$.
+        \end{enumerate}
+
+        As such, from (b), for any message $m$ we can construct a message $m'$
+        that satisfies (a), and thus second preimage-resistance is broken for
+        messages of length $l\ge2$.\qed
     \end{enumerate}
 \end{solution}
 \end{document}
