@@ -1,0 +1,127 @@
+\documentclass{../homework}
+
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+%\usepackage{wrapfig,mathpartir,eurosym,algorithm,moreverb,tikz}
+%\usetikzlibrary{graphs,graphdrawing,arrows.meta,calc}
+%\usegdlibrary{trees}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\input{../name.tex}
+
+\newcommand{\rgets}{\stackrel{\mathdollar}\leftarrow}
+\newcommand{\iseq}{\stackrel{?}=}
+
+\newcommand{\Enc}{\text{Enc}}
+\newcommand{\Dec}{\text{Dec}}
+\newcommand{\tmac}{\text{TreeMAC}}
+
+\begin{document}
+
+\homework{Homework \#6}
+{Due: 05.05.23}{\profname}{\myname}
+
+\begin{problem}
+    Alice sees that the problems of the hash-and-mac construction come from
+    applying the hash function in a row. She knows about Merkle trees --- that
+    it is possible to apply hash functions in a tree-like structure. Thus she
+    proposes the following construction.
+    
+    Let $F:\{0,1\}^{2n} \rightarrow \{0,1\}^n$ be a compression function that
+    is collision-resistant, first preimage resistant and second preimage
+    resistant. (We omit the concrete $\tau$  and $\varepsilon$ because the
+    specifics are not important, just imagine the $\tau$ to be very-very big
+    and $\varepsilon$ to be very-very small.)
+    
+    Just constructing a binary tree would mean, however, that we can apply this
+    constructions to messages whose length is $2^mn$ for some integer $m$.
+    Thus, Alice proposes the following version of a tree construction.
+    
+    Let us have an input $x$, the length of which is a multiple on $n$. (This
+    still sets some constraints on the length of the messages we can
+    authenticate, but let us not worry about that.) Let this $x$ be chopped
+    into $p$ blocks $(x_1,x_2,\dots,x_p)$ with $|x_i|=n$ --- that is, each
+    block has $n$ bits. Given an input $x=(x_1,x_2,\dots,x_p)$ where
+    $2^m<p\leq 2^{m+1}$ we define the function $V$ recursively the following
+    way. First,
+    $$
+        V(x)=x,
+    $$
+    if $|x|=n$. That is, if $V$ is given a single block as an input, it will
+    just output it without change. Secondly,
+    $$
+        V(x_1,x_2,\dots,x_p)=
+        F(V(x_1,\dots,x_{2^{m}}),V(x_{2^{m}+1},\dots,x_p)),
+    $$
+    where $2^m<p\leq 2^{m+1}$. This can be thought of as a binary tree where
+    the left half is a full binary tree and the right half is constructed
+    recursively  using the same construction. For example, if $p=6$, then
+    \begin{align*}
+        V(x_1,x_2,x_3,x_4,x_5,x_6) &= F(V(x_1,x_2,x_3,x_4),V(x_5,x_6))\\
+        &= F(F(V(x_1,x_2),V(x_3,x_4)), F(V(x_5),V(x_6)))\\
+        &= F(F(F(V(x_1),V(x_2)), F(V(x_3),V(x_4))), F(x_5,x_6))\\
+        &= F(F(F(x_1,x_2), F(x_3,x_4)), F(x_5,x_6)).
+    \end{align*}
+    
+    Using this function $V$, Alice defines the TreeMAC for a $n$-bit key $k$ as
+    follows.
+    $$\text{TreeMAC}(k,x)=V(k,x_1,x_2,\dots,x_p),$$
+    where $x=(x_1,x_2,\dots,x_p)$.
+    
+    Show that this scheme is not EF-CMA for messages whose length is a multiple
+    of $n$. (that is, all the messages used in the game have the extra
+    constraint that their length in bits must be a multiple of $n$)
+\end{problem}
+\begin{solution}
+    Let $k$ be an $n$-bit key unknown to the adversary (us). We define messages
+    $x_i := x_{i_1}||x_{i_2}||\dots||x_{i_p}$ with $|x_{i_j}| = n$, and
+    $2^m < p \le 2^{m+1}$ for some non-negative integer $m$. Let $\mathcal{O}$
+    be a $\tmac$-oracle with access to $k$. That is, $\mathcal{O}$ returns $t_i
+    \leftarrow \tmac(k, x_i)$ for any received $x_i$.
+
+    We will show that $\tmac$ does not have EF-CMA for messages whose length is
+    a multiple of $n$.
+    
+    Let us fix $q = 2^{m+1} - 1$. We construct a message
+    $x_1 = x_{1_1}||x_{1_2}||\dots||x_{1_q}$ of length $qn$, and send it to
+    $\mathcal{O}$, who returns to us $t_1$. We then construct a message $x_2 =
+    x_{2_1}||x_{2_2}$ of length $2n$, and a message 
+    $x_3 = x_1||x_2 = x_{1_1}||x_{1_2}||\dots||x_{1_q}||x_{2_1}||x_{2_2}$ of
+    length $(q+2)n$.
+
+    We have by construction that
+    \begin{align*}
+        t_1 = \tmac(k, x_1) &= V(k, x_{1_1}, x_{1_2},\dots, x_{1_q})\\
+        &=F(
+            V(k, x_{1_1}, x_{1_2}, \dots, x_{1_{2^{m} - 1}}),
+            V(x_{1_{2^{m}-1}}, \dots, x_{1_{2^{m+1}-1}})
+        ),
+    \end{align*}
+    which is why we require that $q = 2^{m+1} - 1$.
+
+    Because we have access to the compression function $F$, we can compute
+    $h = F(x_{2_1}, x_{2_2})$. Let us also compute $t_3' = F(t_1, h)$.
+
+    We then have
+    \begin{align*}
+        t_3' &= F(t_1, h)\\
+        &= F(t_1, F(x_{2_1}, x_{2_2}))\\
+        &= F(t_1, F(V(x_{2_1}), V(x_{2_2})))\\
+        &= F(V(k, x_{1_1},\dots,x_{1_q}), V(x_{2_1}, x_{2_2}))\\
+        &= V(k, x_{1_1},\dots,x_{1_q}, x_{2_1}, x_{2_2})\\
+        &= \tmac(k, x_3) = t_3,
+    \end{align*}
+    and we have forged a valid $\tmac$ for $x_3$ without having access to $k$,
+    or querying $\mathcal{O}$ about $x_3$. Hence, by definition, the scheme is
+    not EF-CMA secure.\qed
+\end{solution}
+\end{document}
