@@ -177,7 +177,7 @@
     \begin{quote}
         \textit{Informal observation.} Intuitively, it seems that if a new key
         is generated for every signature, the scheme is practically
-        unbreakable, i.e., signatures are unforgeable.
+        unbreakable, i.e., signatures are unforgeable for a given key-pair.
 
         We have that the key is at least as long as the message, is truly
         random, and is not reused. Also, the public key cannot be obtained form
@@ -185,15 +185,16 @@
         As such, brute force seems to be the only way to forge a signature
         without the secret key.
 
-        Unlike with a One Time Pad, guaranteed correctness of brute force is
+        Unlike for a One-Time Pad, guaranteed correctness of brute force is
         possible here because we have a deterministic verification algorithm.
-        If the signature verification algorithm outputs true, the intent
+        If the signature verification algorithm outputs ``true'', the intent
         \textit{``produce a valid signature for a message''} is mathematically
         achieved. For the OTP, the intent \textit{``recover and identify the
-        original plaintext''} cannot be mathematically achieved.
+        original plaintext''} cannot be mathematically achieved, at least not
+        without additional information.
 
         The below-described attack will not be possible if the secret is not
-        re-used. However, such a one time key scheme would be quite impractical
+        re-used. However, such a one-time key scheme would be quite impractical
         in practice due to having to re-publish a key for each new signature.
     \end{quote}
 
