@@ -174,8 +174,28 @@
     long.
 \end{problem}
 \begin{solution}
-    Intuitively, we can see that if a new key is generated for every signature,
-    the scheme works analogously to a OTP and is practically unbreakable.
+    \begin{quote}
+        \textit{Informal observation.} Intuitively, it seems that if a new key
+        is generated for every signature, the scheme is practically
+        unbreakable, i.e., signatures are unforgeable.
+
+        We have that the key is at least as long as the message, is truly
+        random, and is not reused. Also, the public key cannot be obtained form
+        the secret key by practical cryptanalysis due to the one-way function.
+        As such, brute force seems to be the only way to forge a signature
+        without the secret key.
+
+        Unlike with a One Time Pad, guaranteed correctness of brute force is
+        possible here because we have a deterministic verification algorithm.
+        If the signature verification algorithm outputs true, the intent
+        \textit{``produce a valid signature for a message''} is mathematically
+        achieved. For the OTP, the intent \textit{``recover and identify the
+        original plaintext''} cannot be mathematically achieved.
+
+        The below-described attack will not be possible if the secret is not
+        re-used. However, such a one time key scheme would be quite impractical
+        in practice due to having to re-publish a key for each new signature.
+    \end{quote}
 
     Let us show that this scheme does not satisfy EF-CMA for signatures of
     length $m$-bits, assuming that the same key $sk$ is used for signing
