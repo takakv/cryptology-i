@@ -236,26 +236,27 @@
     \end{pmatrix}.
     $$
 
-    We now construct a new message $M_{2_j}\rgets\{0,1\}$ with
-    $j\in\{1,\dots,m\}$, and, without querying $\mathcal{O}$, we produce the
+    We now construct a new message $M_2$, where $M_{2_j}\rgets\{0,1\}$ with
+    $j\in\{1,\dots,m\}$. Without querying $\mathcal{O}$, we produce the
     signature $c_2$ with
     $$
         c_2 = (x_{1,M_{2_1}}, x_{2,M_{2_2}},\dots,x_{m, M_{2_m}}).
     $$
 
-    We can do this because $M_{2_j}\in\{0, 1\}$ and we now know $x_{j, k}$ for
-    all $j\in\{1,\dots,m\}$ and $k\in\{0,1\}$. In the extremely unlikely event
-    that $M_2 = M_0$ or $M_2 = M_1$, we flip the first bit of the message to
-    produce a fresh\footnotemark{} message.
+    We can do this because $M_{2_j}\in\{0, 1\}$ and from $sk_{rec}$ we now know
+    $x_{j, k}$ for all $j\in\{1,\dots,m\}$ and $k\in\{0,1\}$. In the extremely
+    unlikely event that $M_2 = M_0$ or $M_2 = M_1$, we flip the first bit of
+    the message to produce a fresh\footnotemark{} message.
     \footnotetext{A message that has not been sent to $\mathcal{O}$.}
 
     For all $j\in\{1,\dots,m\}$, we now have
     $$
         F(c_{2_j}) = F(x_{j, M_{2_j}}) = y_{j, M_{2_j}}
     $$
-    by construction of the public key and we have produced a message $M_2$ with
-    a verifiable (valid) signature $c_2$ without having queried $\mathcal{O}$
-    for $M_2$, or $sk$ being given to us. Hence, by definition, the scheme is
-    not EF-CMA secure.\qed
+    by construction of the public key, so the signature $c_2$ is valid.
+    
+    We have produced a verifiable signature $c_2$ for a message $M_2$ without
+    having queried $\mathcal{O}$ for it, and without $sk$ having been given to
+    us. Hence, by definition, the scheme is not EF-CMA secure.\qed
 \end{solution}
 \end{document}
