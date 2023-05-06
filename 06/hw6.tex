@@ -124,4 +124,116 @@
     or querying $\mathcal{O}$ about $x_3$. Hence, by definition, the scheme is
     not EF-CMA secure.\qed
 \end{solution}
+
+\begin{problem}
+    Consider the following signature scheme. Let
+    $F:\{0,1\}^n \rightarrow \{0,1\}^n$ be a $(\tau,\varepsilon)$-one-way
+    function. That is, given $x$, $F(x)$ is easy to compute, but for all
+    $\tau$-time adversaries $A$ we have that
+    $$
+    \Pr[F(x')=y|x\rgets \{0,1\}^n, y\gets F(x), x'\gets A(y)]\leq \varepsilon.
+    $$
+    
+    The key generation algorithm is the following. First, one picks $2m$ random
+    values from $\{0,1\}^n$, let those be
+    $x_{1,0},x_{1,1},x_{2,0},x_{2,1},\dots,x_{m,0},x_{m,1}$. This is our secret
+    key.
+    
+    The public key is computed as $y_{i,j}=F(x_{i,j})$ for all
+    $i\in \{1,\dots,m\}$ and $j\in\{0,1\}$.
+    
+    To write it more visually, we can write it as 
+    $$
+    sk=
+    \begin{pmatrix}
+        x_{1,0} & x_{2,0} & \cdots & x_{m,0} \\
+        x_{1,1} & x_{2,1} & \cdots & x_{m,1} 
+    \end{pmatrix}
+    $$
+    and
+    $$
+    pk=
+    \begin{pmatrix}
+        y_{1,0} & y_{2,0} & \cdots & y_{m,0} \\
+        y_{1,1} & y_{2,1} & \cdots & y_{m,1}
+    \end{pmatrix}.
+    $$
+    
+    This is a signature scheme that is designed to provide signatures for
+    messages that have exactly $m$ bits and that is usable only once. The
+    signature of a $m$-bit message $M$ with bits $M_1,M_2,\dots,M_m$, is the
+    message $(x_{1,M_1},x_{2,M_2},\dots,x_{m,M_m})$. To verify the signature
+    $(c_1,\dots,c_m)$ of a message $M$ with bits $M_1,M_2,\dots,M_m$, one
+    computes $F(c_1),F(c_2),\dots,F(c_m)$ and checks whether
+    $F(c_i) \iseq y_{i,M_i}$ for all $i\in \{1,\dots,m\}$. If for all
+    $i\in \{1,\dots,m\}$ we have that $F(c_i) = y_{i,M_i}$, the verification
+    algorithm outputs $1$, else it outputs $0$.
+    
+    Show that this scheme does not satisfy EF-CMA for signatures with the added
+    constraint that all the messages in the EF-CMA game have to be $m$ bits
+    long.
+\end{problem}
+\begin{solution}
+    Intuitively, we can see that if a new key is generated for every signature,
+    the scheme works analogously to a OTP and is practically unbreakable.
+
+    Let us show that this scheme does not satisfy EF-CMA for signatures of
+    length $m$-bits, assuming that the same key $sk$ is used for signing
+    multiple messages.
+
+    Let $sk$ be the secret key known to the signing oracle $\mathcal{O}$, but
+    not known to the adversary (us). $\mathcal{O}$ uses the same secret key
+    $sk$ for all queries within its lifetime, and returns
+    $c_i = (c_{i_1}, \dots, c_{i_m})$ for any received message $M_i$ with bits
+    $M_{i_1}, M_{i_2}, \dots, M_{i_m}$. 
+
+    We construct two $m$-bit messages
+    \begin{enumerate}
+        \item the $0$-message $M_0$ with bits $M_{0_j}=0,j\in\{1,2,\dots, m\}$,
+        \item the $1$-message $M_1$ with bits $M_{1_j}=1,j\in\{1,2,\dots, m\}$,
+    \end{enumerate}
+    and send them to $\mathcal{O}$. In return, we receive $c_0, c_1$, with
+    \begin{enumerate}
+        \item $c_0 = (c_{0_1}, \dots, c_{0_m}) =
+            (x_{1, M_{0_1}}, x_{2, M_{0_2}}, \dots, x_{m, M_{0_m}}) =
+            (x_{1, 0}, x_{2, 0}, \dots, x_{m,0})$,
+        \item $c_1 = (c_{1_1}, \dots, c_{1_m}) =
+            (x_{1, M_{1_1}}, x_{2, M_{1_2}}, \dots, x_{m, M_{1_m}}) =
+            (x_{1, 1}, x_{2, 1}, \dots, x_{m,1})$,
+    \end{enumerate}
+    and we can reconstruct the secret key
+    $$
+    sk_{rec} =
+    \begin{pmatrix}
+        c_0 \\
+        c_1
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        x_{1,0} & x_{2,0} & \cdots & x_{m,0} \\
+        x_{1,1} & x_{2,1} & \cdots & x_{m,1} 
+    \end{pmatrix}.
+    $$
+
+    We now construct a new message $M_{2_j}\rgets\{0,1\}$ with
+    $j\in\{1,\dots,m\}$, and, without querying $\mathcal{O}$, we produce the
+    signature $c_2$ with
+    $$
+        c_2 = (x_{1,M_{2_1}}, x_{2,M_{2_2}},\dots,x_{m, M_{2_m}}).
+    $$
+
+    We can do this because $M_{2_j}\in\{0, 1\}$ and we now know $x_{j, k}$ for
+    all $j\in\{1,\dots,m\}$ and $k\in\{0,1\}$. In the extremely unlikely event
+    that $M_2 = M_0$ or $M_2 = M_1$, we flip the first bit of the message to
+    produce a fresh\footnotemark{} message.
+    \footnotetext{A message that has not been sent to $\mathcal{O}$.}
+
+    For all $j\in\{1,\dots,m\}$, we now have
+    $$
+        F(c_{2_j}) = F(x_{j, M_{2_j}}) = y_{j, M_{2_j}}
+    $$
+    by construction of the public key and we have produced a message $M_2$ with
+    a verifiable (valid) signature $c_2$ without having queried $\mathcal{O}$
+    for $M_2$. Hence, by definition, the scheme is not EF-CMA secure.\qed
+\end{solution}
 \end{document}
