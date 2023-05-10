@@ -164,7 +164,7 @@
 
         \item Let us show that the scheme is first preimage-resistant in $G$.
 
-        Assume that there exists and adversary who, given $y\rgets G$, can
+        Assume that there exists an adversary who, given $y\rgets G$, can
         output $x$ s.t. $H_{D, iv}(x) = y$.
 
         From \eqref{eq:1}, this means that the adversary can find $x$ s.t.
@@ -177,8 +177,9 @@
         adversary can find $e_x$, and construct $x$ to match. Finding $e_x$ is
         equivalent to the discrete logarithm problem which is defined to be hard
         in $G$. As such, because the adversary is bound by some polynomial
-        function, we know that the adversary cannot efficiently solve the DLOG,
-        which contradicts our initial assumption.
+        function, we know that the adversary cannot efficiently solve the DLOG.
+        It follows that the proposed adversary cannot exist, which contradicts
+        our initial assumption.
 
         Therefore, by contradiction, we showed that there can be no polynomially
         bound adversary to break the first-preimage resistance of $H_{D, iv}$ in
