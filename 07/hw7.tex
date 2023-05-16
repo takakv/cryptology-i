@@ -1,0 +1,235 @@
+\documentclass{../homework}
+
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\input{../name.tex}
+
+\newcommand{\rgets}{\stackrel{\mathdollar}\leftarrow}
+\newcommand{\iseq}{\stackrel{?}=}
+
+\newcommand{\Enc}{\text{Enc}}
+\newcommand{\Dec}{\text{Dec}}
+\newcommand{\tmac}{\text{TreeMAC}}
+
+\begin{document}
+
+\homework{Homework \#7}
+{Due: 16.05.23}{\profname}{\myname}
+
+\begin{problem}
+    It is possible to consider encryption/decryption algorithms that use hash
+    functions as part of their design. Thus it makes sense to consider IND-CPA
+    security in the random oracle model. Write down the definition of IND-CPA
+    security in the random oracle model (for symmetric encryption schemes).
+\end{problem}
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+    Below are several variations of the quadratic residue zero-knowledge proof.
+    Each of them is broken: either it is not a proof (lacks
+    soundness\footnote{We count $1/2$-soundness as OK. But something like
+    $1$-soundness would not be.}), or it is not complete (does not succeed even
+    if $P$ and $V$ are honest), or it is not zero-knowledge (leaks something
+    about the witness). In each case, say which property is missing, and why
+    (e.g., how to attack, how to compute the witness, in which case the
+    protocol does not give the right output, etc.)
+    
+    \underline{Original zero knowledge protocol} (the one that has
+    completeness, $1/2$-soundness, and zero-knowledge):
+    \begin{itemize}
+        \item Input of $P$ and $V$: $N,a\in \Z_N^{*}$. From now on, everything
+        happens in $\Z_N$. (Side note: $N$ here should be a composite number
+        where the factorization of $N$ is not known, because if it is prime or
+        if one knows factorization of $N$ then it is easy to decide whether an
+        element is a quadratic residue or not. However, one should not pay much
+        attention to this as it is not that important when trying to understand
+        the zero-knowledge proof, it is merely a requisite that has to be
+        satisfied for our setting to make sense.)
+        \item Input of $P$: $b\in \Z_N$ such that $b^2=a$.
+        \item $P$ picks random $d\rgets \Z_q$. $P$ computes $c\gets d^2$. $P$
+        sends $c$ to $V$.
+        \item $V$ picks $i\in\{0,1\}$ uniformly and sends $i$ to $P$.
+        \item If $i=0$, $P$ sets $z\gets d$ and sends $z$ to $V$. If $i=1$, $P$
+        sets $z\gets b\cdot d$ and sends $z$ to $V$.
+        \item  If $i=0$, $V$ checks whether $z^2\iseq c$. If yes, then he
+        outputs $1$, otherwise he outputs $0$.  If $i=1$, $V$ checks whether
+        $z^2\iseq a\cdot c$. If yes, then he outputs $1$, otherwise he outputs
+        $0$.
+    \end{itemize}
+    
+    Here are the faulty variations:
+    \begin{enumerate}
+        \item \underline{Protocol 1}:
+        \begin{itemize}
+            \item Input of $P$ and $V$: $N,a\in \Z_N^{*}$.
+            \item Input of $P$: $b\in \Z_N$ such that $b^2=a$.
+            \item  $P$ picks random $d\rgets \Z_q$. $P$ computes $c\gets d^2$.
+            $P$ sends $c$ to $V$.
+            \item $V$ picks $i\in\{0,1\}$ uniformly and sends $i$ to $P$.
+            \item If $i=0$, $P$ sets $z\gets d$ and sends $z$ to $V$. If $i=1$,
+            \pmb{$P$ sets $z\gets  b+d$} and sends $z$ to $V$.
+            \item If $i=0$, $V$ checks whether $z^2\iseq c$. If yes, then he
+            outputs $1$, otherwise he outputs $0$. If $i=1$, $V$ checks whether
+            $z^2\iseq a\cdot c$. If yes, then he outputs $1$, otherwise he
+            outputs $0$.
+        \end{itemize}
+        
+        What property does this protocol not satisfy?
+        
+        \item \underline{Protocol 2}:
+        \begin{itemize}
+            \item Input of $P$ and $V$: $N,a\in \Z_N^{*}$, \pmb{current date}.
+            \item Input of $P$: $b\in \Z_N$ such that $b^2=a$.
+            \item $P$ picks random $d\rgets \Z_q$. $P$ computes $c\gets d^2$.
+            $P$ sends $c$ to $V$.
+            \item \pmb{$V$ considers the current date, such as May the $6$th,
+            for example.}\\
+            \pmb{If the number of the day is even (such as May $6$th), then $V$
+            sets $i$ to be $0$.}\\
+            \pmb{If the number of the day is odd (such as May $7$th), then $V$
+            sets $i$ to be $1$.}\\
+            $V$ sends $i$ to $P$.
+            \item If $i=0$, $P$ sets $z\gets d$ and sends $z$ to $V$. If $i=1$,
+            $P$ sets $z\gets b\cdot d$ and sends $z$ to $V$.
+            \item  If $i=0$, $V$ checks whether $z^2\iseq c$. If yes, then he
+            outputs $1$, otherwise he outputs $0$. If $i=1$, $V$ checks whether
+            $z^2\iseq a\cdot c$. If yes, then he outputs $1$, otherwise he
+            outputs $0$.
+        \end{itemize}
+        
+        What property does this protocol not satisfy?
+        
+        \item \underline{Protocol 3}:
+        \begin{itemize}
+            \item Input of $P$ and $V$: $N,a\in \Z_N^{*}$.
+            \item Input of $P$: $b\in \Z_N$ such that $b^2=a$.
+            \item $P$ picks random $d\rgets \Z_q$. $P$ computes $c\gets d^2$.
+            $P$ sends $c$ to $V$.
+            \item $V$ picks $i\in\{0,1\}$ uniformly and sends $i$ to $P$.
+            \item \pmb{$P$ sets $z_1\gets d$ and sends $z_1$ to $V$. $P$ sets
+            $z_2\gets b\cdot d$ and sends $z$ to $V$.}
+            \item If $i=0$, $V$ checks whether \pmb{$z_1^2\iseq c$}. If yes,
+            then he outputs $1$, otherwise he outputs $0$. If $i=1$, $V$ checks
+            whether \pmb{$z_2^2\iseq a\cdot c$}. If yes, then he outputs $1$,
+            otherwise he outputs $0$.
+        \end{itemize}
+        
+        What property does this protocol not satisfy?
+    \end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item \underline{Protocol 1}
+        
+        The protocol does not satisfy completeness.
+
+        We consider the two cases:
+        \begin{enumerate}
+            \item If $i = 0$, $V$ receives $z$ from $P$, with $z = d$, and $V$
+            can verify that $z^2 \equiv d^2\equiv c \pmod{N}$. This only shows
+            that $P$ computes quadratic residues modulo $N$ correctly, and
+            gives no information about whether $a$ is a quadratic residue or
+            not.
+
+            \item If $i = 1$, $V$ receives $z \equiv b + d \pmod{N}$ from $P$.
+            Since $b^2 \equiv a \pmod{N}$, and $d^2\equiv c \pmod{N}$, we have
+            $$
+            z^2 \equiv (b + d)^2 \equiv b^2 + 2bd + d^2 \equiv
+            a + 2bd + c \pmod{N}.
+            $$
+
+            Because $V$ does not know $b$ (or else there would be no need to
+            prove that $a$ is a quadratic residue), nor does it know $d$, it
+            cannot independently compute the value $a + 2bd + c$ to verify the
+            relation.
+            As such, $V$ cannot verify that $a$ is indeed a quadratic residue
+            (in which case the relation would hold).
+        \end{enumerate}
+
+        We see that $V$ gets no guarantees about $a$ being a quadratic residue
+        in either case, even though $a$ is in fact a quadratic residue. As
+        such, the proof lacks completeness.
+
+        \item \underline{Protocol 2}
+        
+        The protocol does not satisfy soundness.
+
+        We consider a situation where $a$ is not a quadratic residue and $P$ is
+        dishonest. We show that $P$ can convince (a gullible) $V$ that $a$ is a
+        quadratic residue even when this is not true.
+
+        The interaction goes in one of two ways:
+        \begin{enumerate}
+            \item If the number of the day is even, then $P$ knows in advance
+            that $i=0$, correctly computes $c\leftarrow d^2$, and returns $c$
+            to $V$. Then, when $V$ sends $i = 0$ to $P$, $P$ returns $z=d$ to
+            $V$.
+
+            $V$ can then verify that $z^2 \equiv d^2 \equiv c \pmod{N}$, i.e.,
+            that $P$ computes quadratic residues correctly, and will output
+            $1$.
+
+            \item If the number of days is odd, then $P$ knows in advance that
+            $i = 1$. Let us assume that $a$ is not a quadratic residue, i.e.,
+            $\nexists b\in \Z_N$ s.t. $b^2\equiv a\pmod{N}$.
+            
+            $P$ can then behave dishonestly and pick $c$ such that $d^2 \cdot
+            a^{-1}\equiv c\pmod{N}$, assuming that $\gcd{(a, N)} = 1$. $P$ then
+            returns $c$
+            to $V$. When $V$ sends $i=1$ to $P$, $P$ returns
+            $z\equiv d\pmod{N}$.
+            
+            But then, for $V$, we have $z^2 \equiv d^2 \equiv d^2 \cdot
+            \left(a^{-1}\cdot a\right) \equiv \left(d^2 \cdot a^{-1} \right)
+            \cdot a \equiv c \cdot a\pmod{N}$ because $d^2\cdot a^{-1} \equiv c
+            \pmod{N}$. Therefore, $V$ has verified the relation, and will
+            output $1$, even though $a$ is not a quadratic residue.
+
+            $V$ believes that $c$ is a quadratic residue (from (a)). $V$ also
+            (wrongly) believes that $b^2 = a$, which is why $V$ does not
+            suspect the attack. Hence, verifying $z^2= a\cdot c$ seems like a
+            valid proof to $V$.
+        \end{enumerate}
+
+        Since a dishonest $P$ can, without detection, always make $V$ output
+        $1$ for some\footnote{We require that $\gcd{(a, N)} = 1$} quadratic
+        non-residues $a$, the proof lacks soundness.
+
+        \item \underline{Protocol 3}
+        
+        The protocol does not satisfy zero-knowledge.
+
+        $P$ operates the same way regardless of the $i$ value it receives from
+        $V$. That is, $P$ invariably sends to $V$:
+        \begin{itemize}
+            \item $z_1 \equiv d \pmod{N}$,
+            \item $z_2 \equiv b\cdot d \pmod{N}$.
+        \end{itemize}
+
+        But also, $d^2\equiv c \pmod{N}$ and $b^2\equiv a\pmod{N}$. Then, $V$
+        can verify that
+        $$
+            z_2^2 \equiv (b\cdot d)^2 \equiv b^2d^2 \equiv ac \pmod{N}
+        $$
+        holds, and confirm that $a$ is indeed a quadratic residue. However,
+        because $N$ is public, $V$ might\footnote{We require that $\gcd{(d, N)}
+        = 1$} be able to compute $y\equiv z_1^{-1} \equiv d^{-1} \pmod{N}$,
+        and recover $b$ with $z_2y\equiv b\cdot d\cdot d^{-1}\equiv b\pmod{N}$.
+
+        We see that the witness $b$ may get leaked, and so the proof clearly
+        does not satisfy the zero-knowledge property.
+    \end{enumerate}
+\end{solution}
+\end{document}
