@@ -204,8 +204,9 @@
         \end{enumerate}
 
         Since a dishonest $P$ can, without detection, always make $V$ output
-        $1$ for some\footnote{We require that $\gcd{(a, N)} = 1$} quadratic
-        non-residues $a$, the proof lacks soundness.
+        $1$ (i.e., verify the proof) for some\footnote{In our attack, we
+        require that $\gcd{(a, N)} = 1$} quadratic non-residues $a$, the proof
+        lacks soundness.
 
         \item \underline{Protocol 3}
         
@@ -224,12 +225,13 @@
             z_2^2 \equiv (b\cdot d)^2 \equiv b^2d^2 \equiv ac \pmod{N}
         $$
         holds, and confirm that $a$ is indeed a quadratic residue. However,
-        because $N$ is public, $V$ might\footnote{We require that $\gcd{(d, N)}
-        = 1$} be able to compute $y\equiv z_1^{-1} \equiv d^{-1} \pmod{N}$,
-        and recover $b$ with $z_2y\equiv b\cdot d\cdot d^{-1}\equiv b\pmod{N}$.
+        because $N$ is public, $V$ might\footnote{In our attack, we require
+        that $\gcd{(d, N)} = 1$} be able to compute $y\equiv z_1^{-1} \equiv
+        d^{-1} \pmod{N}$, and recover $b$ with $z_2y\equiv b\cdot d\cdot d^{-1}
+        \equiv b\pmod{N}$.
 
-        We see that the witness $b$ may get leaked, and so the proof clearly
-        does not satisfy the zero-knowledge property.
+        We see that the witness $b$ may get leaked to the verifier, and so the
+        proof clearly does not satisfy the zero-knowledge property.
     \end{enumerate}
 \end{solution}
 \end{document}
