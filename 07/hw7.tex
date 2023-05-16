@@ -33,7 +33,88 @@
     security in the random oracle model (for symmetric encryption schemes).
 \end{problem}
 \begin{solution}
+    \iffalse
+    Let us remind ourselves of the definition of IND-CPA for symmetric schemes
+    in the standard model.
 
+    An encryption scheme $(KG, E, D)$ consisting of a key-generation algorithm
+    $KG$, an encryption algorithm $E$, and a decryption algorithm $D$ is
+    $(\tau, \epsilon)$-IND-CPA (indistinguishable under chosen plaintext
+    attacks) if for any $\tau$-time algorithm $A$ we have that
+    \begin{multline*}
+        |\Pr[b = 1 : k \leftarrow KG(), (m_0, m_1) \leftarrow A^{E(k,\cdot)}(),
+        c \leftarrow E(k, m_0), b \leftarrow A^{E(k,\cdot)}(c)]\\ -
+        \Pr[b = 1 : k \leftarrow KG(), (m_0, m_1) \leftarrow A^{E(k,\cdot)}(),
+        c \leftarrow E(k, m_1), b \leftarrow A^{E(k,\cdot)}(c)]| \le \epsilon.
+    \end{multline*}
+    \begin{center}
+        (Here we quantify only over algorithms A that output $(m_0, m_1)$ with
+        $|m_0| = |m_1|$.)
+    \end{center}
+    \fi
+    Let there be a random oracle $H: M \rightarrow N$, and a one way function
+    $f^H: M'\rightarrow N'$ using this oracle. Let $f^H$ be such that for any
+    $\tau$-time oracle algorithm $A^H$ and any security parameter $\eta$, there
+    exists a negligible function $\mu$ with
+    $$
+        \Pr[f^H(x) = f^H(x') : H \rgets \mathrm{Fun}_{M\rightarrow N},
+        x \rgets M', y \leftarrow f(x), x' \leftarrow A^H (1^\eta, y)]
+        \le \mu(\eta).
+    $$
+
+    Let ($KG, E, D)$ be an encryption scheme consisting of a key-generation
+    algorithm $KG$, an encryption algorithm $E$ and a decryption algorithm $D$.
+    To consider this scheme in the random oracle model (ROM), we must model $E$
+    with access to the random oracle $H$. We hence have $c\leftarrow E^H(k, m)$
+    for any key $k\leftarrow KG()$ and some message $m$.
+
+    For IND-CPA in the standard model, there is a $\tau$-time adversary
+    $A^{E(k, \cdot)}$ with access to some encryption oracle $E(k, \cdot)$. In
+    the ROM however, the adversary must also have access to the random oracle
+    $H$. Therefore, in the ROM, we consider some adversary
+    $A^{H, E^H(k, \cdot)}$.
+
+    We can write the adversary submitting a message to the encryption oracle as
+    $$
+        k \leftarrow KG(), H \rgets \mathrm{Fun}_{M\rightarrow N},
+        m \leftarrow A^{H, E^H(k, \cdot)}(), c\leftarrow E^H(k, m).
+    $$
+
+    The definition of IND-CPA for symmetric schemes in the ROM then becomes:
+
+    \textit{Given a random oracle $H \rgets \mathrm{Fun}_{M\rightarrow N}$
+    (where $M$ and $N$ may depend on some security parameter $\eta$), we call a
+    symmetric encryption scheme $(KG, E, D)$ $(\epsilon, \tau)$-IND-CPA secure
+    in the random oracle model if for every $\tau$-time algorithm A, we have
+    that}
+    \begin{multline*}
+        |\Pr[b = 1: k \leftarrow KG(),
+            (m_0, m_1) \leftarrow A^{H, E^H(k,\cdot)}(),
+            c \leftarrow E^H(k, m_0),
+            b \leftarrow A^{H, E^H(k,\cdot)}(c)]\\ -
+        \Pr[b = 1: k\leftarrow KG(),
+            (m_0, m_1) \leftarrow A^{H, E^H(k,\cdot)}(),
+            c \leftarrow E^H(k, m_1),
+            b \leftarrow A^{H, E^H(k,\cdot)}(c)]|
+        \le \epsilon
+    \end{multline*}
+    \textit{under the condition that $|m_0| = |m_1|$.}
+
+    \textit{Addendum.} We considered writing the definition (inspired from
+    asymmetric definitions) as something like
+    \begin{multline*}
+        \Pr[D^H(k, c) = m_i' :
+        H \rgets \mathrm{Fun}_{M\rightarrow N},
+        k \leftarrow KG(1^\eta),\\
+        m_1, m_2, \dots, m_x \leftarrow A^{H, E^H(k,\cdot)}(),
+        c \leftarrow E^H\left(k, m_{i \rgets \{1, \dots,x\}}\right),
+        m_i' \leftarrow A^{H, E^H(k,\cdot)}(c)] \le \mu(\eta)
+    \end{multline*}
+    which means that the adversary attempts to guess which of $x$ different
+    (adversary generated) messages the encryption oracle encrypted. However, we
+    chose not to formalise this definition, as it brings decryption into play,
+    which is not part of the original IND-CPA definition, and may introduce
+    additional considerations.
 \end{solution}
 
 \begin{problem}
