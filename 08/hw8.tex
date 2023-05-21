@@ -1,0 +1,164 @@
+\documentclass{../homework}
+
+\usepackage{etoolbox}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\newtheorem{problem}{Problem}
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }
+
+\input{../name.tex}
+
+\newcommand{\rgets}{\stackrel{\mathdollar}\leftarrow}
+\newcommand{\iseq}{\stackrel{?}=}
+
+\newcommand{\Enc}{\text{Enc}}
+\newcommand{\Dec}{\text{Dec}}
+\newcommand{\tmac}{\text{TreeMAC}}
+
+\begin{document}
+
+\homework{Homework \#8}
+{Due: 26.05.23}{\profname}{\myname}
+
+\begin{problem}
+    Your small organization of $21$ people has decided to elect a new leader.
+    There are two candidates for the leader, you and Alice.
+    Because your organization is a forward-looking one, you have decided to do
+    digital voting using secure multiparty computation instead of paper-voting.
+    You are using a fully homomorphic homomorphic IND-CPA public-key encryption
+    scheme, namely, an encryption scheme with the property that there are
+    easy-to-compute operations $\oplus$ and $\otimes$ such that for all
+    plaintexts $m_1,m_2$ it holds that
+    $$
+        \Enc(pk,m_1)\oplus \Enc(pk,m_2)=Enc(pk,m_1+m_2)
+    $$
+    and
+    $$
+        \Enc(pk,m_1)\otimes \Enc(pk,m_2)=\Enc(pk,m_1\cdot m_2).
+    $$
+    
+    There is also an easy-to-compute operation $\ominus$ that allows you to
+    compute
+    $$
+        \Enc(pk,m_1)\ominus \Enc(pk,m_2)=\Enc(pk,m_1- m_2)
+    $$
+    for any $m_1,m_2$.
+    You can assume that the messages $m_i$ are all in some kind of a large
+    field $\Z_q$.
+    
+    You can assume that this encryption scheme has a property called
+    \emph{circuit privacy} which roughly means that if one is given a secret
+    key and $\Enc(x)$, one cannot tell how this $x$ was computed.
+    One might imagine that, given a fully homomorphic encryption scheme, one
+    can obtain
+    $\Enc(5)=\Enc(2)\oplus \Enc(3)$
+    or
+    $\Enc(5)=\Enc(1)\oplus \Enc(4)$.
+    Given a secret key, it might be possible to distinguish between these two
+    cases.
+    Circuit privacy says that even if you have the secret key, it is not
+    possible to distinguish this --- for any two
+    $f_1(x_1,\dots,x_k)=c$
+    and
+    $f_2(y_1,\dots,y_m)=c$,
+    it is not possible to tell whether $\Enc(c)$ was obtained by starting with
+    $\Enc_{pk}(x_1),\dots,\Enc_{pk}(x_k)$
+    and homomorphically applying the function $f_1$ or by starting with
+    $\Enc_{pk}(y_1),\dots,\Enc_{pk}(y_m)$
+    and homomorphically applying the function $f_2$.
+    (Previously, we haven't had any security properties for the case when the
+    attacker knows the secret key. In fact, fully homomorphic lattice
+    encryption schemes do not usually have circuit privacy, some more
+    operations are necessary for that.)
+% $\Enc(9)=\Enc(1)\oplus(\Enc())
+
+ %(e.g $Enc(pk,10)+Enc(pk,2)=Enc(pk,12)$, $Enc(pk,3)+Enc(pk,3)=Enc(pk,6)$ )
+ 
+    The voting scheme is the following.
+    There are two somewhat trusted parties, Bob and Charlie.
+    It is assumed that Bob and Charlie will not collude because they hate each
+    other.
+    Also we will assume that they will follow the protocol and cannot be bribed
+    or otherwise influenced.
+    
+    Charlie will generate a pair of keys $(pk,sk)$ and give everyone the public
+    key $pk$. Now, if a voting  party $P_i$ wishes to vote for you, they will
+    compute an encryption of $1$, if they want to vote for Alice, they will
+    compute an encryption of $0$. That is, $c_i=Enc(pk,1)$ if $P_i$ wants to
+    vote for you and  $c_i=Enc(pk,0)$ if $P_i$ wants to vote for Alice. All the
+    voting parties will send their ciphertexts $c_i$ to Bob, who will compute
+    $c:=c_1\oplus c_2 \oplus \dots \oplus c_{21}$. Bob sends $c$ to Charlie who
+    will decrypt $c$ with his secret key and produce $m:=Dec(sk,c)$. Charlie
+    will tell $m$ to everybody. If $m\in[0,10]$, Alice will be the winner and
+    if $m\in [11,21]$, you will be the winner.
+    
+    \begin{enumerate}
+        \item Let's assume you want to cheat to guarantee that you will be the
+        leader. From chat around the office you know that at least $3$ other
+        people (i.e not including yourself) will vote for you but no more than
+        $6$ other people will. What should you do to guarantee that you win and
+        that people don't notice that somebody cheated? You can assume that all
+        the other participants (there's $20$ of them) behave honestly, all of
+        them vote and that all of them vote for either Alice or you. (For the
+        sake of clarity - you also have a vote.) You will not be able to post a
+        vote on someone else's behalf or change other people's votes. Otherwise
+        you are allowed to not follow the protocol. What should you do?
+        
+        \item For extra security, Bob will perform the additional following
+        operation for each $i$. Besides doing what is described in the main
+        description of the protocol, the following will be also done. Bob will,
+        for each $i$ take $c_i$, compute $v_i=\Enc_{pk}(1)$, and compute
+        $d_i:=(v_i\ominus c_i)\otimes c_i$. He will then send all the $d_i$ to
+        Charlie, along with the name of the person who submitted the
+        corresponding $c_i$. Charlie will then decrypt the $d_i$ and send them
+        to everyone, including which is name associated with which $d_i$.
+        Assume Bob and Charlie are honest. How does this extra operation
+        prevent attacks? Does this thing still preserve the privacy of the
+        vote?
+    \end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+    \item Assuming that my intel holds, I know I will receive at least $3$
+    votes.
+    Since I need $\ge 11$ votes to win, I need to affect the result by at most
+    $11-3 = 8$ votes.
+    If I can create $8$ votes out of thin air, and all $6$ friendly colleagues
+    vote for me, then the total vote count for me is $14\in[11, 21]$.
+    Clearly I will also win, but with a number of votes that remains
+    mathematically possible, and plausible.
+
+    Let us assume that I will compute an encryption of $8$.
+    Because the encryption scheme has IND-CPA, and Bob does not have access to
+    $sk$, he cannot detect that I have encrypted a number other than $0$ or
+    $1$.
+    Bob then sums up the ciphertexts and sends $c$ to Charlie.
+    Because the encryption scheme has circuit privacy, and Charlie does not
+    gain access to the discrete ciphertexts, he cannot detect either that a
+    ciphertext included in the sum $c$ was the encryption of a value too large.
+
+    When Charlie decrypts $c$, he will get $m\in[11, 14]$, and my win is
+    guaranteed.
+    Because the result is plausible, and neither Bob nor Charlie can
+    mathematically detect my foul-play, I have cheated my election win without
+    discovery.
+    Of course, we assume that other voters do not conduct an internal
+    ``exit poll'', or similar.
+    \end{enumerate}
+\end{solution}
+
+\begin{problem}
+    Which were the three most difficult homework problems this semester? Which
+    were the three easiest? Approximately how much time did it take you to
+    solve them?
+\end{problem}
+\begin{solution}
+
+\end{solution}
+\end{document}
