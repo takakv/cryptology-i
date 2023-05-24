@@ -150,6 +150,50 @@
     discovery.
     Of course, we assume that other voters do not conduct an internal
     ``exit poll'', or similar.
+
+    \item This extra operation serves as a range proof of the vote.
+    We distinguish between three cases.
+    \begin{enumerate}
+        \item If someone votes $0$, we have that
+        $$
+        d=(\Enc_{pk}(1) \ominus \Enc_{pk}(0))\otimes \Enc_{pk}(0)
+        = \Enc_{pk}(0)\otimes \Enc_{pk}(0) = \Enc_{pk}(0),
+        $$
+        and so $\Dec_{sk}(d) = 0$.
+        
+        \item If someone votes $1$, we have that
+        $$
+        d=(\Enc_{pk}(1) \ominus \Enc_{pk}(1))\otimes \Enc_{pk}(1)
+        = \Enc_{pk}(0)\otimes \Enc_{pk}(1) = \Enc_{pk}(0),
+        $$
+        and so $\Dec_{sk}(d) = 0$.
+
+        \item If someone votes $x \in\Z_q\setminus\{0, 1\}$, then we have
+        $\Enc_{pk}(1)\ominus \Enc_{pk}(x) = \Enc_{pk}(1-x)$. Because
+        $1 + (-1) = 0$, $x \neq 1 \Rightarrow -x \neq -1$, and the additive
+        inverse in a field is unique, then clearly $1 - x = 1 + (-x) \neq 0$.
+        Moreover, clearly $x\neq 0$ since $x\in\Z_q\setminus\{0,1\}$.
+
+        It follows that $(1-x)\cdot x = x-x^2 \neq 0$, and so
+        $\Dec_{sk}(d)\neq 0$ with
+        $$
+        d=(\Enc_{pk}(1) \ominus \Enc_{pk}(x))\otimes \Enc_{pk}(x)
+        = \Enc_{pk}(1-x)\otimes \Enc_{pk}(x) = \Enc_{pk}(x-x^2).
+        $$
+    \end{enumerate}
+
+    We see that if someone encrypts a number other than $0$ or $1$, then the
+    extra operation will expose the cheat.
+    We also see that the range proof will output $0$ regardless of whether the
+    vote was for $0$ or $1$, and so the secrecy of the vote is not broken.
+    Therefore, when Charlie publishes the (voter, proof) pairs, everyone can
+    verify if some specific voter was honest, but vote secrecy is preserved for
+    honest voters.
+
+    For cheating voters, it might be possible to solve the equation
+    $x-x^2 = \Dec_{sk}(d_i)$ in $\Z_q$ and therefore recover full or partial
+    information about the vote, though this does not correspond to a candidate
+    in any case.
     \end{enumerate}
 \end{solution}
 
